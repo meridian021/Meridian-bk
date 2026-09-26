@@ -1,0 +1,34 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'transactions' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Transactions</h2>
+    <div class="card">
+      <% if (transactions.length === 0) { %>
+        <div class="empty-state">
+          No transactions yet.<br>Your completed transactions will appear here.
+        </div>
+      <% } else { %>
+        <% transactions.forEach(function(tx) { %>
+          <div class="tx-row">
+            <div>
+              <div class="tx-desc"><%= tx.description || tx.type %></div>
+              <div class="tx-meta"><%= new Date(tx.createdAt).toLocaleString() %> · <%= tx.reference || tx.transactionId %></div>
+            </div>
+            <div style="text-align:right;">
+              <div class="tx-amount"><%= tx.currency %> <%= tx.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
+              <span class="badge badge-<%= tx.status === 'successful' ? 'success' : (tx.status === 'pending' ? 'pending' : 'error') %>"><%= tx.status %></span>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+
+    <% if (totalPages > 1) { %>
+      <div class="pagination">
+        <% for (let p = 1; p <= totalPages; p++) { %>
+          <a href="/account/transactions?page=<%= p %>" class="btn <%= p === currentPage ? 'btn-primary' : 'btn-secondary' %>" style="padding:6px 14px;"><%= p %></a>
+        <% } %>
+      </div>
+    <% } %>
+  </div>
+</div>

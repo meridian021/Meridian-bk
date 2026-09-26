@@ -1,0 +1,62 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'profile' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Profile</h2>
+
+    <% if (success) { %>
+      <div class="badge badge-success" style="margin-bottom:16px;">Profile updated</div>
+    <% } %>
+
+    <div class="card" style="margin-bottom:20px;">
+      <h3 style="margin-top:0;">Account details (read-only)</h3>
+      <div class="profile-grid" style="font-size:0.9rem;">
+        <div><span style="color:var(--color-ink-muted);">Full name</span><br><%= user.firstName %> <%= user.lastName %></div>
+        <div><span style="color:var(--color-ink-muted);">Email</span><br><%= user.email %></div>
+        <div><span style="color:var(--color-ink-muted);">Country</span><br><%= user.country %></div>
+        <div><span style="color:var(--color-ink-muted);">Nationality</span><br><%= user.nationality || '—' %></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Editable information</h3>
+      <form method="POST" action="/account/profile" id="profileForm">
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" value="<%= user.phone || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="occupation">Occupation</label>
+          <input type="text" id="occupation" name="occupation" value="<%= user.occupation || '' %>">
+        </div>
+        <div class="field">
+          <label for="employer">Employer</label>
+          <input type="text" id="employer" name="employer" value="<%= user.employer || '' %>">
+        </div>
+        <div class="field">
+          <label for="address">Street address</label>
+          <input type="text" id="address" name="address" value="<%= user.address || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="city">City</label>
+          <input type="text" id="city" name="city" value="<%= user.city || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="state">State / Province</label>
+          <input type="text" id="state" name="state" value="<%= user.state || '' %>">
+        </div>
+        <div class="field">
+          <label for="postalCode">Postal code</label>
+          <input type="text" id="postalCode" name="postalCode" value="<%= user.postalCode || '' %>" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('profileForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    showLoadingSequence(['Updating your account...']).then(() => form.submit());
+  });
+</script>
