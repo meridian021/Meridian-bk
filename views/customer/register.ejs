@@ -1,0 +1,56 @@
+<section class="container-narrow" style="padding: 64px 24px;">
+  <div class="card">
+    <h2>Open an account</h2>
+    <p style="color: var(--color-ink-muted); font-size: 0.88rem; margin-top: -8px;">
+      This is a temporary single-step form. It will become a guided multi-step
+      flow (country → personal → contact → identity → review) in the next phase.
+    </p>
+    <% if (error) { %>
+      <div class="error-banner"><%= error %></div>
+    <% } %>
+    <form method="POST" action="/auth/register" id="registerForm">
+      <div class="field">
+        <label for="country">Country</label>
+        <select id="country" name="country" required>
+          <option value="">Select your country</option>
+          <% countries.forEach(function(c) { %>
+            <option value="<%= c.code %>" <%= formData.country === c.code ? 'selected' : '' %>><%= c.name %></option>
+          <% }); %>
+        </select>
+      </div>
+      <div class="field">
+        <label for="firstName">First name</label>
+        <input type="text" id="firstName" name="firstName" value="<%= formData.firstName || '' %>" required>
+      </div>
+      <div class="field">
+        <label for="lastName">Last name</label>
+        <input type="text" id="lastName" name="lastName" value="<%= formData.lastName || '' %>" required>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="<%= formData.email || '' %>" required>
+      </div>
+      <div class="field">
+        <label for="phone">Phone</label>
+        <input type="tel" id="phone" name="phone" value="<%= formData.phone || '' %>">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" minlength="8" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Continue</button>
+    </form>
+  </div>
+</section>
+<script>
+  document.getElementById('registerForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    showLoadingSequence([
+      'Creating your account...',
+      'Setting up your banking profile...',
+      'Generating your account information...',
+      'Finalizing your application...'
+    ]).then(() => form.submit());
+  });
+</script>

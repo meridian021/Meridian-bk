@@ -1,0 +1,29 @@
+<section class="container-narrow" style="padding: 64px 24px;">
+  <div class="card">
+    <h2>Log in</h2>
+    <% if (error) { %>
+      <div class="error-banner"><%= error %></div>
+    <% } %>
+    <form method="POST" action="/auth/login" id="loginForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">Log in</button>
+    </form>
+    <p style="margin-top: 16px; font-size: 0.85rem; color: var(--color-ink-muted);">
+      Don't have an account? <a href="/auth/register" style="color: var(--color-primary); font-weight: 500;">Open one</a>
+    </p>
+  </div>
+</section>
+<script>
+  document.getElementById('loginForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    showLoadingSequence(['Verifying your information...']).then(() => form.submit());
+  });
+</script>

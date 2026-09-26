@@ -1,0 +1,60 @@
+<section class="container">
+  <div class="balance-hero">
+    <p style="color: var(--color-ink-muted); margin: 0;">Good to see you, <%= user.firstName %></p>
+    <div class="balance-amount"><%= account.currency %> <%= account.totalBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
+    <div class="balance-grid">
+      <div>
+        <div class="label">Available</div>
+        <div class="value"><%= account.currency %> <%= account.availableBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
+      </div>
+      <div>
+        <div class="label">Locked</div>
+        <div class="value"><%= account.currency %> <%= account.lockedBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="quick-actions">
+    <button class="btn btn-secondary" disabled>Send money</button>
+    <button class="btn btn-secondary" disabled>Receive money</button>
+    <button class="btn btn-secondary" disabled>Deposit</button>
+    <button class="btn btn-secondary" disabled>Cards</button>
+    <button class="btn btn-secondary" disabled>Lock funds</button>
+  </div>
+  <p style="font-size:0.8rem; color: var(--color-ink-muted); margin-top:-12px;">Quick actions activate as each feature is built in upcoming phases.</p>
+
+  <div class="card" style="margin: 24px 0;">
+    <h3 style="margin-bottom: 12px;">Recent transactions</h3>
+    <% if (recentTransactions.length === 0) { %>
+      <div class="empty-state">
+        No transactions yet.<br>Your completed transactions will appear here.
+      </div>
+    <% } else { %>
+      <% recentTransactions.forEach(function(tx) { %>
+        <div class="tx-row">
+          <div>
+            <div class="tx-desc"><%= tx.description || tx.type %></div>
+            <div class="tx-meta"><%= new Date(tx.createdAt).toLocaleDateString() %></div>
+          </div>
+          <div style="text-align:right;">
+            <div class="tx-amount"><%= tx.currency %> <%= tx.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
+            <span class="badge badge-<%= tx.status === 'successful' ? 'success' : (tx.status === 'pending' ? 'pending' : 'error') %>"><%= tx.status %></span>
+          </div>
+        </div>
+      <% }); %>
+    <% } %>
+  </div>
+
+  <div class="card">
+    <h3 style="margin-bottom: 12px;">Account information</h3>
+    <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.9rem;">
+      <div><span style="color:var(--color-ink-muted);">Account number</span><br><%= account.accountNumber %></div>
+      <div><span style="color:var(--color-ink-muted);">Tier</span><br>Tier <%= account.tier %></div>
+      <div><span style="color:var(--color-ink-muted);">Country</span><br><%= account.country %></div>
+      <div><span style="color:var(--color-ink-muted);">Currency</span><br><%= account.currency %></div>
+      <div><span style="color:var(--color-ink-muted);">Status</span><br>
+        <span class="badge badge-<%= account.status === 'active' ? 'success' : 'pending' %>"><%= account.status %></span>
+      </div>
+    </div>
+  </div>
+</section>

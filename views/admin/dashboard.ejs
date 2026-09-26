@@ -1,0 +1,25 @@
+<section class="container" style="padding: 32px 24px;">
+  <h2>Overview</h2>
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 20px;">
+    <div class="card">
+      <div style="color:var(--color-ink-muted); font-size:0.85rem;">Total customers</div>
+      <div style="font-size:1.8rem; font-family:var(--font-display);"><%= totalCustomers %></div>
+    </div>
+    <div class="card">
+      <div style="color:var(--color-ink-muted); font-size:0.85rem;">Pending KYC</div>
+      <div style="font-size:1.8rem; font-family:var(--font-display);"><%= pendingKyc %></div>
+    </div>
+    <% tierCounts.forEach(function(t) { %>
+      <div class="card">
+        <div style="color:var(--color-ink-muted); font-size:0.85rem;">Tier <%= t._id %> accounts</div>
+        <div style="font-size:1.8rem; font-family:var(--font-display);"><%= t.count %></div>
+      </div>
+    <% }); %>
+  </div>
+
+  <div class="card" style="margin-top: 24px;">
+    <p style="color: var(--color-ink-muted);">
+      Customer management, KYC review, transfers, cards, and settings screens land in Phases 4–5.
+    </p>
+  </div>
+</section>
