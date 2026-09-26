@@ -1,3 +1,7 @@
+const CardTopUp = require("../models/CardTopUp");
+const cardTopUpService = require("../services/cardTopUpService");
+const CryptoDeposit = require("../models/CryptoDeposit");
+const cryptoDepositService = require("../services/cryptoDepositService");
 const Transfer = require("../models/Transfer");
 const transferService = require("../services/transferService");
 const KYCApplication = require("../models/KYCApplication");
@@ -432,6 +436,111 @@ router.post("/transfers/:id/hold", requireAdmin, async (req, res, next) => {
   try {
     await transferService.holdTransfer(req.params.id, req.body.reason);
     res.redirect(`/admin/transfers/${req.params.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+router.get("/crypto", requireAdmin, async (req, res, next) => {
+  try {
+    const deposits = await CryptoDeposit.find()
+      .populate("userId", "firstName lastName email")
+      .sort({ createdAt: -1 });
+    res.render("admin/crypto", {
+      title: "Crypto deposits",
+      layout: "layouts/admin",
+      deposits,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/crypto/:id/approve", requireAdmin, async (req, res, next) => {
+  try {
+    await cryptoDepositService.approveDeposit(req.params.id);
+    res.redirect("/admin/crypto");
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/crypto/:id/reject", requireAdmin, async (req, res, next) => {
+  try {
+    await cryptoDepositService.rejectDeposit(req.params.id, req.body.reason);
+    res.redirect("/admin/crypto");
+  } catch (err) {
+    next(err);
+  }
+});
+
+// --- Settings (crypto addresses + card fee, minimal for now) ---
+router.get("/settings", requireAdmin, async (req, res, next) => {
+  try {
+    const settings = await SystemSetting.getSettings();
+    res.render("admin/settings", {
+      title: "Settings",
+      layout: "layouts/admin",
+      settings,
+      saved: false,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/settings", requireAdmin, async (req, res, next) => {
+  try {
+    const { bitcoin, ethereum, usdt, cardFee } = req.body;
+    const settings = await SystemSetting.getSettings();
+
+    settings.cryptoAddresses.bitcoin = bitcoin;
+    settings.cryptoAddresses.ethereum = ethereum;
+    settings.cryptoAddresses.usdt = usdt;
+    settings.cardFee = Number(cardFee);
+    await settings.save();
+
+    res.render("admin/settings", {
+      title: "Settings",
+      layout: "layouts/admin",
+      settings,
+      saved: true,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+router.get("/card-topups", requireAdmin, async (req, res, next) => {
+  try {
+    const topUps = await CardTopUp.find()
+      .populate("userId", "firstName lastName email")
+      .sort({ createdAt: -1 });
+    res.render("admin/card-topups", {
+      title: "Card top-ups",
+      layout: "layouts/admin",
+      topUps,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post(
+  "/card-topups/:id/approve",
+  requireAdmin,
+  async (req, res, next) => {
+    try {
+      await cardTopUpService.approveCardTopUp(req.params.id);
+      res.redirect("/admin/card-topups");
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+router.post("/card-topups/:id/reject", requireAdmin, async (req, res, next) => {
+  try {
+    await cardTopUpService.rejectCardTopUp(req.params.id, req.body.reason);
+    res.redirect("/admin/card-topups");
   } catch (err) {
     next(err);
   }

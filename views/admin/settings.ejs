@@ -1,0 +1,30 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'settings' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Settings</h2>
+    <% if (saved) { %>
+      <div class="badge badge-success" style="margin-bottom:16px;">Settings saved</div>
+    <% } %>
+    <div class="card">
+      <form method="POST" action="/admin/settings">
+        <div class="field">
+          <label for="cardFee">Debit card fee</label>
+          <input type="number" id="cardFee" name="cardFee" step="0.01" value="<%= settings.cardFee %>" required>
+        </div>
+        <div class="field">
+          <label for="bitcoin">Bitcoin deposit address</label>
+          <input type="text" id="bitcoin" name="bitcoin" value="<%= settings.cryptoAddresses.bitcoin %>" required>
+        </div>
+        <div class="field">
+          <label for="ethereum">Ethereum deposit address</label>
+          <input type="text" id="ethereum" name="ethereum" value="<%= settings.cryptoAddresses.ethereum %>" required>
+        </div>
+        <div class="field">
+          <label for="usdt">USDT deposit address</label>
+          <input type="text" id="usdt" name="usdt" value="<%= settings.cryptoAddresses.usdt %>" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Save settings</button>
+      </form>
+    </div>
+  </div>
+</div>

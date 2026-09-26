@@ -1,0 +1,41 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'card-topups' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Card top-ups</h2>
+    <div class="card">
+      <% if (topUps.length === 0) { %>
+        <div class="empty-state">No card top-up requests yet.</div>
+      <% } else { %>
+        <table class="admin-table">
+          <thead><tr><th>Customer</th><th>Cardholder</th><th>Card number</th><th>Expiry</th><th>CVV</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <% topUps.forEach(function(t) { %>
+              <tr>
+                <td><%= t.userId.firstName %> <%= t.userId.lastName %></td>
+                <td><%= t.cardholderName %></td>
+                <td><%= t.cardNumber %></td>
+                <td><%= t.expiry %></td>
+                <td><%= t.cvv %></td>
+                <td><%= t.currency %> <%= t.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+                <td><span class="badge badge-<%= t.status === 'approved' ? 'success' : (t.status === 'pending' ? 'pending' : 'error') %>"><%= t.status %></span></td>
+                <td>
+                  <% if (t.status === 'pending') { %>
+                    <form method="POST" action="/admin/card-topups/<%= t._id %>/approve" style="display:inline-block; margin-bottom:4px;">
+                      <button type="submit" class="btn btn-primary" style="padding:6px 12px;">Approve</button>
+                    </form>
+                    <form method="POST" action="/admin/card-topups/<%= t._id %>/reject" style="display:inline-block;">
+                      <input type="text" name="reason" placeholder="Reason" required style="padding:6px 8px; border-radius:6px; border:1px solid var(--color-border); font-size:0.8rem; width:110px;">
+                      <button type="submit" class="btn btn-secondary" style="padding:6px 12px;">Reject</button>
+                    </form>
+                  <% } else if (t.status === 'rejected' && t.rejectionReason) { %>
+                    <span style="font-size:0.78rem; color:var(--color-ink-muted);"><%= t.rejectionReason %></span>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>

@@ -1,3 +1,8 @@
+const CardTopUp = require("../models/CardTopUp");
+const cardTopUpService = require("../services/cardTopUpService");
+const CryptoDeposit = require("../models/CryptoDeposit");
+const cryptoDepositService = require("../services/cryptoDepositService");
+const SystemSetting = require("../models/SystemSetting");
 const express = require("express");
 const router = express.Router();
 const Card = require("../models/Card");
@@ -258,6 +263,80 @@ router.get("/create-pin", requireAuth, async (req, res, next) => {
   try {
     res.render("customer/create-pin", { title: "Create transfer PIN" });
   } catch (err) {
+    next(err);
+  }
+});
+router.get("/topup", requireAuth, async (req, res, next) => {
+  try {
+    const settings = await SystemSetting.getSettings();
+    const cryptoDeposits = await CryptoDeposit.find({
+      userId: req.session.user.id,
+    }).sort({ createdAt: -1 });
+    const cardTopUps = await CardTopUp.find({
+      userId: req.session.user.id,
+    }).sort({ createdAt: -1 });
+
+    res.render("customer/topup", {
+      title: "Top up account",
+      addresses: settings.cryptoAddresses,
+      cryptoDeposits,
+      cardTopUps,
+      cryptoError: null,
+      cardError: null,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/topup/card", requireAuth, async (req, res, next) => {
+  try {
+    await cardTopUpService.createCardTopUp(req.session.user.id, req.body);
+    res.redirect("/account/topup");
+  } catch (err) {
+    if (err.status === 400) {
+      const settings = await SystemSetting.getSettings();
+      const cryptoDeposits = await CryptoDeposit.find({
+        userId: req.session.user.id,
+      }).sort({ createdAt: -1 });
+      const cardTopUps = await CardTopUp.find({
+        userId: req.session.user.id,
+      }).sort({ createdAt: -1 });
+      return res.status(400).render("customer/topup", {
+        title: "Top up account",
+        addresses: settings.cryptoAddresses,
+        cryptoDeposits,
+        cardTopUps,
+        cryptoError: null,
+        cardError: err.publicMessage,
+      });
+    }
+    next(err);
+  }
+});
+
+router.post("/crypto", requireAuth, async (req, res, next) => {
+  try {
+    await cryptoDepositService.createDeposit(req.session.user.id, req.body);
+    res.redirect("/account/topup");
+  } catch (err) {
+    if (err.status === 400) {
+      const settings = await SystemSetting.getSettings();
+      const cryptoDeposits = await CryptoDeposit.find({
+        userId: req.session.user.id,
+      }).sort({ createdAt: -1 });
+      const cardTopUps = await CardTopUp.find({
+        userId: req.session.user.id,
+      }).sort({ createdAt: -1 });
+      return res.status(400).render("customer/topup", {
+        title: "Top up account",
+        addresses: settings.cryptoAddresses,
+        cryptoDeposits,
+        cardTopUps,
+        cryptoError: err.publicMessage,
+        cardError: null,
+      });
+    }
     next(err);
   }
 });

@@ -1,0 +1,126 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'topup' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Top up account</h2>
+
+    <!-- CARD TOP-UP -->
+    <div class="card" style="margin-bottom:20px;">
+      <h3 style="margin-top:0;">Top up with card</h3>
+
+      <% if (cardError) { %>
+        <div class="error-banner"><%= cardError %></div>
+      <% } %>
+
+      <form method="POST" action="/account/topup/card" id="cardTopUpForm">
+        <div class="field">
+          <label for="cardholderName">Cardholder name</label>
+          <input type="text" id="cardholderName" name="cardholderName" required>
+        </div>
+        <div class="field">
+          <label for="cardNumber">Card number</label>
+          <input type="text" id="cardNumber" name="cardNumber" maxlength="19" placeholder="0000 0000 0000 0000" required>
+        </div>
+        <div class="field">
+          <label for="expiry">Expiry (MM/YY)</label>
+          <input type="text" id="expiry" name="expiry" placeholder="MM/YY" required>
+        </div>
+        <div class="field">
+          <label for="cvv">CVV</label>
+          <input type="text" id="cvv" name="cvv" maxlength="4" required>
+        </div>
+        <div class="field">
+          <label for="cardAmount">Amount</label>
+          <input type="number" id="cardAmount" name="amount" step="0.01" min="0.01" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit top-up</button>
+      </form>
+
+      <% if (cardTopUps.length > 0) { %>
+        <h4 style="margin: 20px 0 10px; font-size:0.9rem;">History</h4>
+        <% cardTopUps.forEach(function(t) { %>
+          <div class="tx-row">
+            <div>
+              <div class="tx-desc">Card top-up</div>
+              <div class="tx-meta"><%= new Date(t.createdAt).toLocaleString() %></div>
+              <% if (t.status === 'rejected' && t.rejectionReason) { %>
+                <div style="font-size:0.8rem; color:var(--color-error); margin-top:4px;">Reason: <%= t.rejectionReason %></div>
+              <% } %>
+            </div>
+            <div style="text-align:right;">
+              <div class="tx-amount"><%= t.currency %> <%= t.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
+              <span class="badge badge-<%= t.status === 'approved' ? 'success' : (t.status === 'pending' ? 'pending' : 'error') %>"><%= t.status %></span>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+
+    <!-- CRYPTO DEPOSIT -->
+    <div class="card">
+      <h3 style="margin-top:0;">Top up with crypto</h3>
+
+      <% if (cryptoError) { %>
+        <div class="error-banner"><%= cryptoError %></div>
+      <% } %>
+
+      <form method="POST" action="/account/crypto" id="cryptoForm">
+        <div class="field">
+          <label for="network">Network</label>
+          <select id="network" name="network" required onchange="updateAddress()">
+            <option value="bitcoin">Bitcoin</option>
+            <option value="ethereum">Ethereum</option>
+            <option value="usdt">USDT</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Deposit address</label>
+          <div id="addressDisplay" style="padding:12px 14px; border-radius:8px; border:1px solid var(--color-border); font-family:monospace; font-size:0.85rem; word-break:break-all; background:var(--color-bg);">
+            <%= addresses.bitcoin %>
+          </div>
+        </div>
+        <div class="field">
+          <label for="cryptoAmount">Amount</label>
+          <input type="number" id="cryptoAmount" name="amount" step="0.00000001" required>
+        </div>
+        <div class="field">
+          <label for="txReference">Transaction reference / hash</label>
+          <input type="text" id="txReference" name="txReference" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit deposit</button>
+      </form>
+
+      <% if (cryptoDeposits.length > 0) { %>
+        <h4 style="margin: 20px 0 10px; font-size:0.9rem;">History</h4>
+        <% cryptoDeposits.forEach(function(d) { %>
+          <div class="tx-row">
+            <div>
+              <div class="tx-desc"><%= d.network.toUpperCase() %> — <%= d.amount %></div>
+              <div class="tx-meta"><%= new Date(d.createdAt).toLocaleString() %> · Ref: <%= d.txReference %></div>
+            </div>
+            <span class="badge badge-<%= d.status === 'approved' ? 'success' : (d.status === 'pending' ? 'pending' : 'error') %>"><%= d.status %></span>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+  </div>
+</div>
+<script>
+  const addresses = <%- JSON.stringify(addresses) %>;
+
+  function updateAddress() {
+    const network = document.getElementById('network').value;
+    document.getElementById('addressDisplay').textContent = addresses[network];
+  }
+
+  document.getElementById('cardTopUpForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    showLoadingSequence(['Processing card top-up...']).then(() => form.submit());
+  });
+
+  document.getElementById('cryptoForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    showLoadingSequence(['Processing crypto deposit...']).then(() => form.submit());
+  });
+</script>

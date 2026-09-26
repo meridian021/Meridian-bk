@@ -1,0 +1,36 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'crypto' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Crypto deposits</h2>
+    <div class="card">
+      <% if (deposits.length === 0) { %>
+        <div class="empty-state">No crypto deposit requests yet.</div>
+      <% } else { %>
+        <table class="admin-table">
+          <thead><tr><th>Customer</th><th>Network</th><th>Amount</th><th>Reference</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <% deposits.forEach(function(d) { %>
+              <tr>
+                <td><%= d.userId.firstName %> <%= d.userId.lastName %></td>
+                <td><%= d.network.toUpperCase() %></td>
+                <td><%= d.amount %></td>
+                <td><%= d.txReference %></td>
+                <td><span class="badge badge-<%= d.status === 'approved' ? 'success' : (d.status === 'pending' ? 'pending' : 'error') %>"><%= d.status %></span></td>
+                <td>
+                  <% if (d.status === 'pending') { %>
+                    <form method="POST" action="/admin/crypto/<%= d._id %>/approve" style="display:inline-block;">
+                      <button type="submit" class="btn btn-primary" style="padding:6px 12px;">Approve</button>
+                    </form>
+                    <form method="POST" action="/admin/crypto/<%= d._id %>/reject" style="display:inline-block;">
+                      <button type="submit" class="btn btn-secondary" style="padding:6px 12px;">Reject</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>

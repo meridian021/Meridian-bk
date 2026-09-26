@@ -25,10 +25,19 @@
     class="sidebar-link <%= activePage === 'cards' ? 'active' : '' %>"
     >Cards</a
   >
-  <span class="sidebar-link disabled"
-    >Crypto <span class="sidebar-soon badge badge-muted">Soon</span></span
+  <a
+    href="/admin/crypto"
+    class="sidebar-link <%= activePage === 'crypto' ? 'active' : '' %>"
+    >Crypto</a
   >
-  <span class="sidebar-link disabled"
-    >Settings <span class="sidebar-soon badge badge-muted">Soon</span></span
+  <a
+    href="/admin/card-topups"
+    class="sidebar-link <%= activePage === 'card-topups' ? 'active' : '' %>"
+    >Card Top-ups</a
+  >
+  <a
+    href="/admin/settings"
+    class="sidebar-link <%= activePage === 'settings' ? 'active' : '' %>"
+    >Settings</a
   >
 </div>
