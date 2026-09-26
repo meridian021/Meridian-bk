@@ -24,7 +24,15 @@
       <button class="btn btn-secondary" disabled>Lock funds</button>
     </div>
     <p style="font-size:0.8rem; color: var(--color-ink-muted); margin-top:-12px;">Quick actions activate as each feature is built in upcoming phases.</p>
-
+    <% if (account.tier < 3) { %>
+  <div class="card" style="margin: 16px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+    <div>
+      <strong>Current tier: Tier <%= account.tier %></strong>
+      <p style="margin:4px 0 0; color:var(--color-ink-muted); font-size:0.85rem;">Upgrade to Tier <%= account.tier + 1 %> for higher transfer limits.</p>
+    </div>
+    <a href="/account/upgrade" class="btn btn-primary">Upgrade</a>
+  </div>
+<% } %>
     <div class="card" style="margin: 24px 0;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
         <h3 style="margin:0;">Recent transactions</h3>

@@ -1,0 +1,46 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'overview' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Tier 3 verification</h2>
+
+    <div class="card">
+      <% if (error) { %>
+        <div class="error-banner"><%= error %></div>
+      <% } %>
+      <form method="POST" action="/account/upgrade/tier3" enctype="multipart/form-data" id="kycTier3Form">
+        <div class="field">
+          <label for="sourceOfFunds">Source of funds</label>
+          <input type="text" id="sourceOfFunds" name="sourceOfFunds" placeholder="e.g. Salary, business income, savings" required>
+        </div>
+        <div class="field">
+          <label for="expectedActivity">Expected transaction activity</label>
+          <input type="text" id="expectedActivity" name="expectedActivity" placeholder="e.g. Monthly transfers up to $100,000" required>
+        </div>
+        <div class="field">
+          <label for="additionalInfo">Additional information (optional)</label>
+          <textarea id="additionalInfo" name="additionalInfo" rows="3"></textarea>
+        </div>
+        <div class="field">
+          <label for="passportPhoto">Passport photo (JPG, PNG, or PDF, max 5MB)</label>
+          <input type="file" id="passportPhoto" name="passportPhoto" accept=".jpg,.jpeg,.png,.pdf" required>
+        </div>
+        <div class="field">
+          <label for="proofOfAddress">Proof of address (JPG, PNG, or PDF, max 5MB)</label>
+          <input type="file" id="proofOfAddress" name="proofOfAddress" accept=".jpg,.jpeg,.png,.pdf" required>
+        </div>
+        <div class="field">
+          <label for="cardImage">Active debit/credit card image (JPG, PNG, or PDF, max 5MB). This card must be in your name & from a different bank.</label>
+          <input type="file" id="cardImage" name="cardImage" accept=".jpg,.jpeg,.png,.pdf" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit for review</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('kycTier3Form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    showLoadingSequence(['Uploading documents...', 'Submitting KYC application...']).then(() => form.submit());
+  });
+</script>

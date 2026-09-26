@@ -1,0 +1,25 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'kyc' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">KYC review</h2>
+    <div class="card">
+      <% if (applications.length === 0) { %>
+        <div class="empty-state">No pending applications.</div>
+      <% } else { %>
+        <table class="admin-table">
+          <thead><tr><th>Customer</th><th>Tier requested</th><th>Submitted</th><th></th></tr></thead>
+          <tbody>
+            <% applications.forEach(function(app) { %>
+              <tr>
+                <td><%= app.userId.firstName %> <%= app.userId.lastName %><br><span style="color:var(--color-ink-muted); font-size:0.8rem;"><%= app.userId.email %></span></td>
+                <td>Tier <%= app.tierRequested %></td>
+                <td><%= new Date(app.createdAt).toLocaleDateString() %></td>
+                <td><a href="/admin/kyc/<%= app._id %>" class="btn btn-secondary" style="padding:6px 12px;">Review</a></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'overview' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Tier 2 verification</h2>
+
+    <div class="card">
+      <% if (error) { %>
+        <div class="error-banner"><%= error %></div>
+      <% } %>
+      <form method="POST" action="/account/upgrade/tier2" enctype="multipart/form-data" id="kycForm">
+        <div class="field">
+          <label for="occupation">Occupation</label>
+          <input type="text" id="occupation" name="occupation" required>
+        </div>
+        <div class="field">
+          <label for="employer">Employer / Business name</label>
+          <input type="text" id="employer" name="employer">
+        </div>
+        <div class="field">
+          <label for="governmentIdNumber">Government ID number</label>
+          <input type="text" id="governmentIdNumber" name="governmentIdNumber" required>
+        </div>
+        <div class="field">
+          <label for="governmentId">Government ID (JPG, PNG, or PDF, max 5MB)</label>
+          <input type="file" id="governmentId" name="governmentId" accept=".jpg,.jpeg,.png,.pdf" required>
+        </div>
+        <div class="field">
+          <label for="proofOfAddress">Proof of address (JPG, PNG, or PDF, max 5MB)</label>
+          <input type="file" id="proofOfAddress" name="proofOfAddress" accept=".jpg,.jpeg,.png,.pdf" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Submit for review</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('kycForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    showLoadingSequence(['Uploading documents...', 'Submitting KYC application...']).then(() => form.submit());
+  });
+</script>

@@ -1,3 +1,6 @@
+const KYCApplication = require("../models/KYCApplication");
+const Document = require("../models/Document");
+const { approveKyc, rejectKyc } = require("../services/kycService");
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
@@ -212,6 +215,77 @@ router.post("/customers/:id/status", requireAdmin, async (req, res, next) => {
     await Account.findOneAndUpdate({ userId: req.params.id }, { status });
 
     res.redirect(`/admin/customers/${req.params.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+// --- KYC review ---
+router.get("/kyc", requireAdmin, async (req, res, next) => {
+  try {
+    const applications = await KYCApplication.find({ status: "pending" })
+      .populate("userId", "firstName lastName email")
+      .sort({ createdAt: -1 });
+
+    res.render("admin/kyc-list", {
+      title: "KYC review",
+      layout: "layouts/admin",
+      applications,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/kyc/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const application = await KYCApplication.findById(req.params.id).populate(
+      "userId",
+    );
+    if (!application)
+      return res
+        .status(404)
+        .render("errors/404", { title: "Not found", layout: false });
+
+    const documents = await Document.find({
+      kycApplicationId: application._id,
+    });
+
+    res.render("admin/kyc-detail", {
+      title: "Review application",
+      layout: "layouts/admin",
+      application,
+      documents,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/kyc/:id/approve", requireAdmin, async (req, res, next) => {
+  try {
+    await approveKyc(req.params.id, req.session.user.id);
+    res.redirect("/admin/kyc");
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/kyc/:id/reject", requireAdmin, async (req, res, next) => {
+  try {
+    await rejectKyc(req.params.id, req.session.user.id, req.body.reason);
+    res.redirect("/admin/kyc");
+  } catch (err) {
+    next(err);
+  }
+});
+
+// --- Serve a document's raw bytes for preview/download (admin only) ---
+router.get("/documents/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const doc = await Document.findById(req.params.id);
+    if (!doc) return res.status(404).send("Not found");
+    res.set("Content-Type", doc.mimeType);
+    res.send(doc.fileData);
   } catch (err) {
     next(err);
   }
