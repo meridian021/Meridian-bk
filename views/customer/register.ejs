@@ -1,51 +1,174 @@
-<section class="container-narrow" style="padding: 64px 24px;">
+<section class="container-narrow" style="padding: 48px 24px;">
+  <div class="stepper" id="stepper">
+    <div class="step-item active" data-indicator="1"><span class="step-circle">1</span><span class="step-label">Country</span></div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-indicator="2"><span class="step-circle">2</span><span class="step-label">Personal</span></div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-indicator="3"><span class="step-circle">3</span><span class="step-label">Contact</span></div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-indicator="4"><span class="step-circle">4</span><span class="step-label">Address</span></div>
+    <div class="step-connector"></div>
+    <div class="step-item" data-indicator="5"><span class="step-circle">5</span><span class="step-label">Review</span></div>
+  </div>
+
   <div class="card">
-    <h2>Open an account</h2>
-    <p style="color: var(--color-ink-muted); font-size: 0.88rem; margin-top: -8px;">
-      This is a temporary single-step form. It will become a guided multi-step
-      flow (country → personal → contact → identity → review) in the next phase.
-    </p>
     <% if (error) { %>
       <div class="error-banner"><%= error %></div>
     <% } %>
-    <form method="POST" action="/auth/register" id="registerForm">
-      <div class="field">
-        <label for="country">Country</label>
-        <select id="country" name="country" required>
-          <option value="">Select your country</option>
-          <% countries.forEach(function(c) { %>
-            <option value="<%= c.code %>" <%= formData.country === c.code ? 'selected' : '' %>><%= c.name %></option>
-          <% }); %>
-        </select>
+
+    <form id="registerForm" method="POST" action="/auth/register" novalidate>
+
+      <!-- STEP 1: Country -->
+      <div class="form-step" data-step="1">
+        <h3>Where are you based?</h3>
+        <div class="field">
+          <label for="country">Country</label>
+          <select id="country" name="country" required>
+            <option value="">Select your country</option>
+            <% countries.forEach(function(c) { %>
+              <option value="<%= c.code %>" <%= formData.country === c.code ? 'selected' : '' %>><%= c.name %></option>
+            <% }); %>
+          </select>
+        </div>
+        <p style="font-size:0.82rem; color:var(--color-ink-muted);">Your account currency is assigned automatically based on your country.</p>
       </div>
-      <div class="field">
-        <label for="firstName">First name</label>
-        <input type="text" id="firstName" name="firstName" value="<%= formData.firstName || '' %>" required>
+
+      <!-- STEP 2: Personal information -->
+      <div class="form-step" data-step="2" hidden>
+        <h3>Personal information</h3>
+        <div class="field">
+          <label for="firstName">First name</label>
+          <input type="text" id="firstName" name="firstName" value="<%= formData.firstName || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="lastName">Last name</label>
+          <input type="text" id="lastName" name="lastName" value="<%= formData.lastName || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="dateOfBirth">Date of birth</label>
+          <input type="date" id="dateOfBirth" name="dateOfBirth" value="<%= formData.dateOfBirth || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="nationality">Nationality</label>
+          <input type="text" id="nationality" name="nationality" value="<%= formData.nationality || '' %>" required>
+        </div>
       </div>
-      <div class="field">
-        <label for="lastName">Last name</label>
-        <input type="text" id="lastName" name="lastName" value="<%= formData.lastName || '' %>" required>
+
+      <!-- STEP 3: Contact information -->
+      <div class="form-step" data-step="3" hidden>
+        <h3>Contact information</h3>
+        <div class="field">
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" value="<%= formData.email || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="phone">Phone</label>
+          <input type="tel" id="phone" name="phone" value="<%= formData.phone || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" minlength="8" required>
+        </div>
       </div>
-      <div class="field">
-        <label for="email">Email</label>
-        <input type="email" id="email" name="email" value="<%= formData.email || '' %>" required>
+
+      <!-- STEP 4: Address -->
+      <div class="form-step" data-step="4" hidden>
+        <h3>Address</h3>
+        <div class="field">
+          <label for="address">Street address</label>
+          <input type="text" id="address" name="address" value="<%= formData.address || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="city">City</label>
+          <input type="text" id="city" name="city" value="<%= formData.city || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="state">State / Province</label>
+          <input type="text" id="state" name="state" value="<%= formData.state || '' %>">
+        </div>
+        <div class="field">
+          <label for="postalCode">Postal code</label>
+          <input type="text" id="postalCode" name="postalCode" value="<%= formData.postalCode || '' %>" required>
+        </div>
       </div>
-      <div class="field">
-        <label for="phone">Phone</label>
-        <input type="tel" id="phone" name="phone" value="<%= formData.phone || '' %>">
+
+      <!-- STEP 5: Review -->
+      <div class="form-step" data-step="5" hidden>
+        <h3>Review your details</h3>
+        <div id="reviewSummary" style="font-size:0.92rem; line-height:1.9;"></div>
+        <p style="font-size:0.8rem; color:var(--color-ink-muted); margin-top:12px;">
+          By continuing, you agree with our Terms of Service and Privacy Policy. You also consent to receive communications from us regarding your account and services.
+        </p>
       </div>
-      <div class="field">
-        <label for="password">Password</label>
-        <input type="password" id="password" name="password" minlength="8" required>
+
+      <div class="step-nav" style="display:flex; justify-content:space-between; margin-top:24px;">
+        <button type="button" id="backBtn" class="btn btn-secondary" hidden>Back</button>
+        <button type="button" id="nextBtn" class="btn btn-primary" style="margin-left:auto;">Continue</button>
+        <button type="submit" id="submitBtn" class="btn btn-primary" style="margin-left:auto;" hidden>Create account</button>
       </div>
-      <button type="submit" class="btn btn-primary btn-block">Continue</button>
     </form>
   </div>
 </section>
+
 <script>
-  document.getElementById('registerForm').addEventListener('submit', function (e) {
+(function () {
+  const steps = Array.from(document.querySelectorAll('.form-step'));
+  const indicators = Array.from(document.querySelectorAll('.step-item'));
+  const backBtn = document.getElementById('backBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const submitBtn = document.getElementById('submitBtn');
+  const form = document.getElementById('registerForm');
+  let current = 1;
+  const total = steps.length;
+
+  function showStep(n) {
+    steps.forEach(s => s.hidden = Number(s.dataset.step) !== n);
+    indicators.forEach(i => i.classList.toggle('active', Number(i.dataset.indicator) <= n));
+    backBtn.hidden = n === 1;
+    nextBtn.hidden = n === total;
+    submitBtn.hidden = n !== total;
+    if (n === total) buildReview();
+    current = n;
+  }
+
+  function currentStepValid() {
+    const activeStep = steps.find(s => Number(s.dataset.step) === current);
+    const inputs = activeStep.querySelectorAll('input, select');
+    for (const input of inputs) {
+      if (!input.checkValidity()) {
+        input.reportValidity();
+        return false;
+      }
+    }
+    return true;
+  }
+
+  function buildReview() {
+    const val = (id) => document.getElementById(id).value;
+    const countrySelect = document.getElementById('country');
+    const countryLabel = countrySelect.options[countrySelect.selectedIndex]?.text || '';
+    document.getElementById('reviewSummary').innerHTML = `
+      <div><strong>Country:</strong> ${countryLabel}</div>
+      <div><strong>Name:</strong> ${val('firstName')} ${val('lastName')}</div>
+      <div><strong>Date of birth:</strong> ${val('dateOfBirth')}</div>
+      <div><strong>Email:</strong> ${val('email')}</div>
+      <div><strong>Phone:</strong> ${val('phone')}</div>
+      <div><strong>Address:</strong> ${val('address')}, ${val('city')} ${val('postalCode')}</div>
+    `;
+  }
+
+  nextBtn.addEventListener('click', () => {
+    if (!currentStepValid()) return;
+    showStep(Math.min(current + 1, total));
+  });
+
+  backBtn.addEventListener('click', () => {
+    showStep(Math.max(current - 1, 1));
+  });
+
+  form.addEventListener('submit', function (e) {
     e.preventDefault();
-    const form = e.target;
+    if (!currentStepValid()) return;
     showLoadingSequence([
       'Creating your account...',
       'Setting up your banking profile...',
@@ -53,4 +176,7 @@
       'Finalizing your application...'
     ]).then(() => form.submit());
   });
+
+  showStep(1);
+})();
 </script>
