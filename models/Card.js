@@ -1,26 +1,37 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const cardSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+const cardSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
 
-  cardNumberMasked: { type: String },   // e.g. •••• 4821, generated on approval
-  expiryDate: { type: String },
-  cvvHash: { type: String },
+    shippingAddress: { type: String, required: true },
+    feeAmount: { type: Number },
+    feeTransactionId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Transaction",
+    },
+    feePaid: { type: Boolean, default: false },
 
-  feeAmount: { type: Number },
-  feeTransactionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' },
-  feePaid: { type: Boolean, default: false },
-
-  status: {
-    type: String,
-    enum: ['requested', 'approved', 'rejected', 'delayed', 'shipped', 'delivered', 'activated'],
-    default: 'requested'
+    status: {
+      type: String,
+      enum: [
+        "requested",
+        "approved",
+        "rejected",
+        "delayed",
+        "shipped",
+        "delivered",
+      ],
+      default: "requested",
+    },
+    delayReason: { type: String },
+    expectedDeliveryDate: { type: Date },
   },
-  delayReason: { type: String },
-  expectedDeliveryDate: { type: Date },
+  { timestamps: true },
+);
 
-  pinHash: { type: String },
-  pinCreatedAt: { type: Date }
-}, { timestamps: true });
-
-module.exports = mongoose.model('Card', cardSchema);
+module.exports = mongoose.model("Card", cardSchema);

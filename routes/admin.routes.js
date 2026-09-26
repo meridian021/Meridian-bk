@@ -4,7 +4,8 @@ const { approveKyc, rejectKyc } = require("../services/kycService");
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
-
+const Card = require("../models/Card");
+const cardService = require("../services/cardService");
 const requireAdmin = require("../middleware/requireAdmin");
 const User = require("../models/User");
 const Account = require("../models/Account");
@@ -286,6 +287,91 @@ router.get("/documents/:id", requireAdmin, async (req, res, next) => {
     if (!doc) return res.status(404).send("Not found");
     res.set("Content-Type", doc.mimeType);
     res.send(doc.fileData);
+  } catch (err) {
+    next(err);
+  }
+});
+router.get("/cards", requireAdmin, async (req, res, next) => {
+  try {
+    const cards = await Card.find()
+      .populate("userId", "firstName lastName email")
+      .sort({ createdAt: -1 });
+    res.render("admin/cards", {
+      title: "Cards",
+      layout: "layouts/admin",
+      cards,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/cards/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const card = await Card.findById(req.params.id).populate("userId");
+    if (!card)
+      return res
+        .status(404)
+        .render("errors/404", { title: "Not found", layout: false });
+    res.render("admin/card-detail", {
+      title: "Card request",
+      layout: "layouts/admin",
+      card,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/cards/:id/approve", requireAdmin, async (req, res, next) => {
+  try {
+    const card = await Card.findById(req.params.id).populate("userId");
+    await cardService.approveCard(req.params.id, card.userId);
+    res.redirect(`/admin/cards/${req.params.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/cards/:id/reject", requireAdmin, async (req, res, next) => {
+  try {
+    const card = await Card.findById(req.params.id).populate("userId");
+    await cardService.rejectCard(req.params.id, card.userId, req.body.reason);
+    res.redirect(`/admin/cards/${req.params.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/cards/:id/delay", requireAdmin, async (req, res, next) => {
+  try {
+    const card = await Card.findById(req.params.id).populate("userId");
+    await cardService.delayCard(
+      req.params.id,
+      card.userId,
+      req.body.reason,
+      req.body.newDate,
+    );
+    res.redirect(`/admin/cards/${req.params.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/cards/:id/ship", requireAdmin, async (req, res, next) => {
+  try {
+    await cardService.markShipped(req.params.id);
+    res.redirect(`/admin/cards/${req.params.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/cards/:id/deliver", requireAdmin, async (req, res, next) => {
+  try {
+    const card = await Card.findById(req.params.id).populate("userId");
+    await cardService.markDelivered(req.params.id, card.userId);
+    res.redirect(`/admin/cards/${req.params.id}`);
   } catch (err) {
     next(err);
   }

@@ -15,11 +15,15 @@
     >Profile</a
   >
 
-  <span class="sidebar-link disabled"
-    >Transfers <span class="sidebar-soon badge badge-muted">Soon</span></span
+  <a
+    href="/account/transfers"
+    class="sidebar-link <%= activePage === 'transfers' ? 'active' : '' %>"
+    >Transfers</a
   >
-  <span class="sidebar-link disabled"
-    >Cards <span class="sidebar-soon badge badge-muted">Soon</span></span
+  <a
+    href="/account/card"
+    class="sidebar-link <%= activePage === 'card' ? 'active' : '' %>"
+    >Card</a
   >
   <span class="sidebar-link disabled"
     >Fixed Deposits

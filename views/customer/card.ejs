@@ -1,0 +1,64 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'card' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Debit card</h2>
+
+        <% if (!card) { %>
+      <div class="card">
+        <h3 style="margin-top:0;">You don't have a physical debit card yet.</h3>
+        <p style="color:var(--color-ink-muted);">Request one to get started. A one-time card fee applies and will be deducted from your available balance.</p>
+
+        <% if (error) { %>
+          <div class="error-banner"><%= error %></div>
+        <% } %>
+
+        <form method="POST" action="/account/card/request" id="requestCardForm">
+          <div class="field">
+            <label for="shippingAddress">Shipping address</label>
+            <textarea id="shippingAddress" name="shippingAddress" rows="3" required><%= user.address ? user.address + ', ' + user.city + (user.state ? ', ' + user.state : '') + ' ' + (user.postalCode || '') : '' %></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary">Request debit card</button>
+        </form>
+      </div>
+
+    <% } else if (card.status === 'requested') { %>
+      <div class="card">
+        <span class="badge badge-pending">Requested</span>
+        <p style="color:var(--color-ink-muted); margin-top:10px;">Your request is pending.</p>
+      </div>
+
+    <% } else if (card.status === 'rejected') { %>
+      <div class="card">
+        <span class="badge badge-error">Rejected</span>
+        <p style="color:var(--color-ink-muted); margin-top:10px;"><%= card.delayReason || 'No reason provided.' %></p>
+      </div>
+
+    <% } else if (card.status === 'delayed') { %>
+      <div class="card">
+        <span class="badge badge-error">Delayed</span>
+        <p style="margin-top:10px;">Updated expected delivery: <strong><%= new Date(card.expectedDeliveryDate).toDateString() %></strong></p>
+        <p style="color:var(--color-ink-muted);">Reason: <%= card.delayReason %></p>
+      </div>
+
+    <% } else if (card.status === 'approved' || card.status === 'shipped') { %>
+      <div class="card">
+        <span class="badge badge-pending"><%= card.status %></span>
+        <p style="margin-top:10px;">Your card will be shipped directly to the shipping address you provided.</p>
+        <p style="margin-top:10px;">Expected delivery: <strong><%= new Date(card.expectedDeliveryDate).toDateString() %></strong></p>
+      </div>
+
+    <% } else if (card.status === 'delivered') { %>
+      <div class="card">
+        <span class="badge badge-success">Delivered</span>
+        <p style="color:var(--color-ink-muted); margin-top:10px;">Your card has been marked as delivered to your mailing address.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+<script>
+  const reqForm = document.getElementById('requestCardForm');
+  if (reqForm) reqForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    showLoadingSequence(['Requesting debit card...']).then(() => e.target.submit());
+  });
+</script>

@@ -1,0 +1,30 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'transfers' }) %>
+  <div class="app-main">
+    <a href="/account/transfers" style="font-size:0.85rem; color:var(--color-ink-muted);">← Back to transfers</a>
+    <h2 style="margin-top:8px;">Create transfer PIN</h2>
+
+    <div class="card">
+      <p style="color:var(--color-ink-muted);">You need an active physical debit card before creating a PIN.</p>
+
+      <div class="field">
+        <label for="cardNumber">Debit Card Number</label>
+        <input type="text" id="cardNumber" name="cardNumber" placeholder="•••• •••• •••• ••••" disabled>
+      </div>
+      <div class="field">
+        <label for="expiry">Expiry Date</label>
+        <input type="text" id="expiry" name="expiry" placeholder="MM/YY" disabled>
+      </div>
+      <div class="field">
+        <label for="cvv">CVV</label>
+        <input type="text" id="cvv" name="cvv" maxlength="3" disabled>
+      </div>
+
+      <p style="font-size:0.85rem; color:var(--color-error); margin-top:4px;">
+        Your physical debit card must be activated before you can create a transfer PIN.
+      </p>
+
+      <a href="/account/card" class="btn btn-primary" style="margin-top:12px;">Get a debit card</a>
+    </div>
+  </div>
+</div>

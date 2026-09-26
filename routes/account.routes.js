@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
-
+const Card = require("../models/Card");
+const cardService = require("../services/cardService");
 const requireAuth = require("../middleware/requireAuth");
 const upload = require("../middleware/upload");
 const User = require("../models/User");
@@ -174,5 +175,61 @@ router.post(
     }
   },
 );
+router.get("/card", requireAuth, async (req, res, next) => {
+  try {
+    const card = await Card.findOne({ userId: req.session.user.id }).sort({
+      createdAt: -1,
+    });
+    const user = await User.findById(req.session.user.id);
+    res.render("customer/card", {
+      title: "Debit card",
+      card,
+      user,
+      error: null,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/card/request", requireAuth, async (req, res, next) => {
+  try {
+    const { shippingAddress } = req.body;
+
+    if (!shippingAddress || !shippingAddress.trim()) {
+      const card = await Card.findOne({ userId: req.session.user.id }).sort({
+        createdAt: -1,
+      });
+      const user = await User.findById(req.session.user.id);
+      return res.status(400).render("customer/card", {
+        title: "Debit card",
+        card,
+        user,
+        error: "Please enter a shipping address.",
+      });
+    }
+
+    const user = await User.findById(req.session.user.id);
+    await cardService.requestCard(req.session.user.id, user, shippingAddress);
+    res.redirect("/account/card");
+  } catch (err) {
+    next(err);
+  }
+});
+router.get("/transfers", requireAuth, async (req, res, next) => {
+  try {
+    res.render("customer/transfers", { title: "Transfers" });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/create-pin", requireAuth, async (req, res, next) => {
+  try {
+    res.render("customer/create-pin", { title: "Create transfer PIN" });
+  } catch (err) {
+    next(err);
+  }
+});
 
 module.exports = router;

@@ -476,3 +476,12 @@ footer.site-footer {
   margin-bottom: 0;
   min-width: 140px;
 }
+.btn:disabled,
+.btn[disabled] {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+input:disabled {
+  background: var(--color-bg);
+  color: var(--color-ink-muted);
+}

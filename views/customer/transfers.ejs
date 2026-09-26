@@ -1,0 +1,42 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'transfers' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Transfers</h2>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Send money</h3>
+      <form>
+        <div class="field">
+          <label for="recipientName">Recipient name</label>
+          <input type="text" id="recipientName" name="recipientName" placeholder="Full name">
+        </div>
+        <div class="field">
+          <label for="recipientAccount">Recipient account number</label>
+          <input type="text" id="recipientAccount" name="recipientAccount" placeholder="e.g. MB4821309213">
+        </div>
+        <div class="field">
+          <label for="recipientPhone">Recipient phone (optional)</label>
+          <input type="tel" id="recipientPhone" name="recipientPhone" placeholder="+1 555 000 0000">
+        </div>
+        <div class="field">
+          <label for="amount">Amount</label>
+          <input type="number" id="amount" name="amount" step="0.01" placeholder="0.00">
+        </div>
+        <div class="field">
+          <label for="description">Description</label>
+          <input type="text" id="description" name="description" placeholder="What's this transfer for?">
+        </div>
+
+        <div class="field">
+          <label for="transferPin">Transfer PIN</label>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <input type="password" id="transferPin" name="transferPin" maxlength="4" placeholder="You don't have an active PIN" disabled style="flex:1;">
+            <a href="/account/create-pin" class="btn btn-secondary" style="white-space:nowrap;">Create PIN</a>
+          </div>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-block" disabled>Make transfer</button>
+      </form>
+    </div>
+  </div>
+</div>

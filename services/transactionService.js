@@ -9,37 +9,44 @@ function generateTransactionId() {
   );
 }
 
-async function creditAccount({ userId, amount, description, reference }) {
+async function applyCredit({
+  userId,
+  amount,
+  type,
+  description,
+  reference,
+  sender,
+}) {
   const account = await Account.findOne({ userId });
   if (!account) throw new Error("Account not found");
 
   account.availableBalance += Number(amount);
-  await account.save(); // pre-save hook on Account recalculates totalBalance
+  await account.save();
 
   const transaction = await Transaction.create({
     transactionId: generateTransactionId(),
     userId,
-    type: "admin_credit",
+    type,
     amount: Number(amount),
     currency: account.currency,
-    description: description || "Account credited by admin",
+    description,
     reference,
     status: "successful",
     completedAt: new Date(),
-    sender: "admin",
+    sender: sender || "system",
   });
 
   return { account, transaction };
 }
 
-async function debitAccount({ userId, amount, description, reference }) {
+async function applyDebit({ userId, amount, type, description, reference }) {
   const account = await Account.findOne({ userId });
   if (!account) throw new Error("Account not found");
 
   if (account.availableBalance < Number(amount)) {
     const err = new Error("Insufficient available balance");
     err.status = 400;
-    err.publicMessage = "Insufficient available balance for that debit.";
+    err.publicMessage = "Insufficient available balance for that action.";
     throw err;
   }
 
@@ -49,17 +56,44 @@ async function debitAccount({ userId, amount, description, reference }) {
   const transaction = await Transaction.create({
     transactionId: generateTransactionId(),
     userId,
-    type: "admin_debit",
+    type,
     amount: Number(amount),
     currency: account.currency,
-    description: description || "Account debited by admin",
+    description,
     reference,
     status: "successful",
     completedAt: new Date(),
-    sender: "admin",
   });
 
   return { account, transaction };
 }
 
-module.exports = { generateTransactionId, creditAccount, debitAccount };
+// Thin wrappers for admin-initiated balance changes (Phase 4 already calls these)
+async function creditAccount({ userId, amount, description, reference }) {
+  return applyCredit({
+    userId,
+    amount,
+    type: "admin_credit",
+    description: description || "Account credited by admin",
+    reference,
+    sender: "admin",
+  });
+}
+
+async function debitAccount({ userId, amount, description, reference }) {
+  return applyDebit({
+    userId,
+    amount,
+    type: "admin_debit",
+    description: description || "Account debited by admin",
+    reference,
+  });
+}
+
+module.exports = {
+  generateTransactionId,
+  applyCredit,
+  applyDebit,
+  creditAccount,
+  debitAccount,
+};

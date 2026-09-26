@@ -1,0 +1,26 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'cards' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Card requests</h2>
+    <div class="card">
+      <% if (cards.length === 0) { %>
+        <div class="empty-state">No card requests yet.</div>
+      <% } else { %>
+        <table class="admin-table">
+          <thead><tr><th>Customer</th><th>Fee</th><th>Status</th><th>Expected delivery</th><th></th></tr></thead>
+          <tbody>
+            <% cards.forEach(function(c) { %>
+              <tr>
+                <td><%= c.userId.firstName %> <%= c.userId.lastName %><br><span style="color:var(--color-ink-muted); font-size:0.8rem;"><%= c.userId.email %></span></td>
+                <td><%= c.feeAmount %></td>
+                <td><span class="badge badge-<%= c.status === 'activated' || c.status === 'delivered' ? 'success' : (c.status === 'rejected' ? 'error' : 'pending') %>"><%= c.status %></span></td>
+                <td><%= c.expectedDeliveryDate ? new Date(c.expectedDeliveryDate).toDateString() : '—' %></td>
+                <td><a href="/admin/cards/<%= c._id %>" class="btn btn-secondary" style="padding:6px 12px;">Manage</a></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>
