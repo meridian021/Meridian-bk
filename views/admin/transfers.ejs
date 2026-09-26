@@ -1,0 +1,26 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'transfers' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Transfers</h2>
+    <div class="card">
+      <% if (transfers.length === 0) { %>
+        <div class="empty-state">No transfer requests yet.</div>
+      <% } else { %>
+        <table class="admin-table">
+          <thead><tr><th>Customer</th><th>Recipient</th><th>Amount</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <% transfers.forEach(function(t) { %>
+              <tr>
+                <td><%= t.userId.firstName %> <%= t.userId.lastName %></td>
+                <td><%= t.recipientName %> — <%= t.bankName %></td>
+                <td><%= t.currency %> <%= t.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></td>
+                <td><span class="badge badge-<%= t.status === 'successful' ? 'success' : ((t.status === 'pending' || t.status === 'held') ? 'pending' : 'error') %>"><%= t.status %></span></td>
+                <td><a href="/admin/transfers/<%= t._id %>" class="btn btn-secondary" style="padding:6px 12px;">Review</a></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>

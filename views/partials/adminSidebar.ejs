@@ -15,8 +15,10 @@
     class="sidebar-link <%= activePage === 'kyc' ? 'active' : '' %>"
     >KYC</a
   >
-  <span class="sidebar-link disabled"
-    >Transfers <span class="sidebar-soon badge badge-muted">Soon</span></span
+  <a
+    href="/admin/transfers"
+    class="sidebar-link <%= activePage === 'transfers' ? 'active' : '' %>"
+    >Transfers</a
   >
   <a
     href="/admin/cards"

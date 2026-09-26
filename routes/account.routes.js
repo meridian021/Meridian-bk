@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const Card = require("../models/Card");
 const cardService = require("../services/cardService");
+const Transfer = require("../models/Transfer");
+const transferService = require("../services/transferService");
 const requireAuth = require("../middleware/requireAuth");
 const upload = require("../middleware/upload");
 const User = require("../models/User");
@@ -218,8 +220,36 @@ router.post("/card/request", requireAuth, async (req, res, next) => {
 });
 router.get("/transfers", requireAuth, async (req, res, next) => {
   try {
-    res.render("customer/transfers", { title: "Transfers" });
+    const transfers = await Transfer.find({
+      userId: req.session.user.id,
+      transferType: "external",
+    }).sort({ createdAt: -1 });
+    res.render("customer/transfers", {
+      title: "Transfers",
+      transfers,
+      error: null,
+    });
   } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/transfers/external", requireAuth, async (req, res, next) => {
+  try {
+    await transferService.createExternalTransfer(req.session.user.id, req.body);
+    res.redirect("/account/transfers");
+  } catch (err) {
+    if (err.status === 400) {
+      const transfers = await Transfer.find({
+        userId: req.session.user.id,
+        transferType: "external",
+      }).sort({ createdAt: -1 });
+      return res.status(400).render("customer/transfers", {
+        title: "Transfers",
+        transfers,
+        error: err.publicMessage,
+      });
+    }
     next(err);
   }
 });

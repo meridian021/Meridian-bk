@@ -1,32 +1,43 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const transferSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  transactionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Transaction' },
+const transferSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    transactionId: { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
 
-  transferType: { type: String, enum: ['internal', 'external'], required: true },
+    transferType: {
+      type: String,
+      enum: ["internal", "external"],
+      required: true,
+    },
 
-  amount: { type: Number, required: true },
-  currency: { type: String, required: true },
-  purpose: { type: String },
+    amount: { type: Number, required: true },
+    currency: { type: String, required: true },
+    purpose: { type: String },
 
-  // Internal
-  recipientAccountNumber: { type: String },
-  recipientName: { type: String },
+    // Internal
+    recipientAccountNumber: { type: String },
+    recipientName: { type: String },
 
-  // External / international
-  bankName: { type: String },
-  externalAccountNumber: { type: String },
-  iban: { type: String },
-  swiftBic: { type: String },
-  country: { type: String },
+    // External / international
+    bankName: { type: String },
+    externalAccountNumber: { type: String },
+    iban: { type: String },
+    swiftBic: { type: String },
+    country: { type: String },
 
-  status: {
-    type: String,
-    enum: ['pending', 'approved', 'rejected', 'successful', 'failed'],
-    default: 'pending'
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected", "held", "successful", "failed"],
+      default: "pending",
+    },
+    rejectionReason: { type: String },
   },
-  rejectionReason: { type: String }
-}, { timestamps: true });
+  { timestamps: true },
+);
 
-module.exports = mongoose.model('Transfer', transferSchema);
+module.exports = mongoose.model("Transfer", transferSchema);

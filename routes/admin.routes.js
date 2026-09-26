@@ -1,3 +1,5 @@
+const Transfer = require("../models/Transfer");
+const transferService = require("../services/transferService");
 const KYCApplication = require("../models/KYCApplication");
 const Document = require("../models/Document");
 const { approveKyc, rejectKyc } = require("../services/kycService");
@@ -372,6 +374,64 @@ router.post("/cards/:id/deliver", requireAdmin, async (req, res, next) => {
     const card = await Card.findById(req.params.id).populate("userId");
     await cardService.markDelivered(req.params.id, card.userId);
     res.redirect(`/admin/cards/${req.params.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+router.get("/transfers", requireAdmin, async (req, res, next) => {
+  try {
+    const transfers = await Transfer.find({ transferType: "external" })
+      .populate("userId", "firstName lastName email")
+      .sort({ createdAt: -1 });
+    res.render("admin/transfers", {
+      title: "Transfers",
+      layout: "layouts/admin",
+      transfers,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.get("/transfers/:id", requireAdmin, async (req, res, next) => {
+  try {
+    const transfer = await Transfer.findById(req.params.id).populate("userId");
+    if (!transfer)
+      return res
+        .status(404)
+        .render("errors/404", { title: "Not found", layout: false });
+    res.render("admin/transfer-detail", {
+      title: "Transfer",
+      layout: "layouts/admin",
+      transfer,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/transfers/:id/approve", requireAdmin, async (req, res, next) => {
+  try {
+    await transferService.approveTransfer(req.params.id);
+    res.redirect(`/admin/transfers/${req.params.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/transfers/:id/reject", requireAdmin, async (req, res, next) => {
+  try {
+    await transferService.rejectTransfer(req.params.id, req.body.reason);
+    res.redirect(`/admin/transfers/${req.params.id}`);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/transfers/:id/hold", requireAdmin, async (req, res, next) => {
+  try {
+    await transferService.holdTransfer(req.params.id, req.body.reason);
+    res.redirect(`/admin/transfers/${req.params.id}`);
   } catch (err) {
     next(err);
   }

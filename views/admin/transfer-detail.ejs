@@ -1,0 +1,42 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'transfers' }) %>
+  <div class="app-main">
+    <a href="/admin/transfers" style="font-size:0.85rem; color:var(--color-ink-muted);">← Back to transfers</a>
+    <h2 style="margin-top:8px;"><%= transfer.userId.firstName %> <%= transfer.userId.lastName %></h2>
+    <span class="badge badge-<%= transfer.status === 'successful' ? 'success' : ((transfer.status === 'pending' || transfer.status === 'held') ? 'pending' : 'error') %>"><%= transfer.status %></span>
+
+    <div class="card" style="margin:16px 0;">
+      <h3 style="margin-top:0;">Details</h3>
+      <div class="profile-grid" style="font-size:0.9rem;">
+        <div><span style="color:var(--color-ink-muted);">Recipient</span><br><%= transfer.recipientName %></div>
+        <div><span style="color:var(--color-ink-muted);">Bank</span><br><%= transfer.bankName %></div>
+        <div><span style="color:var(--color-ink-muted);">Account number</span><br><%= transfer.externalAccountNumber %></div>
+        <div><span style="color:var(--color-ink-muted);">IBAN</span><br><%= transfer.iban || '—' %></div>
+        <div><span style="color:var(--color-ink-muted);">SWIFT/BIC</span><br><%= transfer.swiftBic || '—' %></div>
+        <div><span style="color:var(--color-ink-muted);">Country</span><br><%= transfer.country %></div>
+        <div><span style="color:var(--color-ink-muted);">Amount</span><br><%= transfer.currency %> <%= transfer.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
+        <div><span style="color:var(--color-ink-muted);">Purpose</span><br><%= transfer.purpose %></div>
+        <% if (transfer.rejectionReason) { %>
+          <div><span style="color:var(--color-ink-muted);">Reason</span><br><%= transfer.rejectionReason %></div>
+        <% } %>
+      </div>
+    </div>
+
+    <% if (transfer.status === 'pending' || transfer.status === 'held') { %>
+      <div class="card">
+        <h3 style="margin-top:0;">Decision</h3>
+        <form method="POST" action="/admin/transfers/<%= transfer._id %>/approve" style="display:inline-block; margin-right:10px;">
+          <button type="submit" class="btn btn-primary">Approve</button>
+        </form>
+        <form method="POST" action="/admin/transfers/<%= transfer._id %>/hold" style="display:inline-block; margin-right:10px;">
+          <input type="text" name="reason" placeholder="Hold reason" required style="padding:10px 12px; border-radius:8px; border:1px solid var(--color-border); margin-right:8px;">
+          <button type="submit" class="btn btn-secondary">Hold</button>
+        </form>
+        <form method="POST" action="/admin/transfers/<%= transfer._id %>/reject" style="display:inline-block;">
+          <input type="text" name="reason" placeholder="Rejection reason" required style="padding:10px 12px; border-radius:8px; border:1px solid var(--color-border); margin-right:8px;">
+          <button type="submit" class="btn btn-secondary">Reject</button>
+        </form>
+      </div>
+    <% } %>
+  </div>
+</div>
