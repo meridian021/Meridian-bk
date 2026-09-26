@@ -1,0 +1,104 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'customers' }) %>
+  <div class="app-main">
+    <a href="/admin/customers" style="font-size:0.85rem; color:var(--color-ink-muted);">← Back to customers</a>
+    <h2 style="margin-top:8px;"><%= user.firstName %> <%= user.lastName %></h2>
+
+    <% if (message) { %>
+      <div class="badge badge-success" style="margin-bottom:16px;"><%= message %></div>
+    <% } %>
+
+    <div class="profile-section card">
+      <h3>Account overview</h3>
+      <div class="profile-grid" style="font-size:0.9rem;">
+        <div><span style="color:var(--color-ink-muted);">Email</span><br><%= user.email %></div>
+        <div><span style="color:var(--color-ink-muted);">Phone</span><br><%= user.phone || '—' %></div>
+        <div><span style="color:var(--color-ink-muted);">Account number</span><br><%= account ? account.accountNumber : '—' %></div>
+        <div><span style="color:var(--color-ink-muted);">Country / Currency</span><br><%= user.country %> / <%= account ? account.currency : '—' %></div>
+        <div><span style="color:var(--color-ink-muted);">Available balance</span><br><%= account ? account.currency + ' ' + account.availableBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) : '—' %></div>
+        <div><span style="color:var(--color-ink-muted);">Locked balance</span><br><%= account ? account.currency + ' ' + account.lockedBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) : '—' %></div>
+      </div>
+    </div>
+
+    <div class="profile-section card">
+      <h3>Credit / Debit account</h3>
+      <form method="POST" action="/admin/customers/<%= user._id %>/balance" class="inline-form" id="balanceForm">
+        <div class="field">
+          <label>Action</label>
+          <select name="action" required>
+            <option value="credit">Credit</option>
+            <option value="debit">Debit</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Amount</label>
+          <input type="number" name="amount" step="0.01" min="0.01" required>
+        </div>
+        <div class="field" style="min-width:220px;">
+          <label>Description</label>
+          <input type="text" name="description" placeholder="e.g. Manual balance correction">
+        </div>
+        <button type="submit" class="btn btn-primary">Apply</button>
+      </form>
+    </div>
+
+    <div class="profile-section card">
+      <h3>Tier management</h3>
+      <form method="POST" action="/admin/customers/<%= user._id %>/tier" class="inline-form">
+        <div class="field">
+          <label>Tier</label>
+          <select name="tier" required>
+            <option value="1" <%= account && account.tier === 1 ? 'selected' : '' %>>Tier 1</option>
+            <option value="2" <%= account && account.tier === 2 ? 'selected' : '' %>>Tier 2</option>
+            <option value="3" <%= account && account.tier === 3 ? 'selected' : '' %>>Tier 3</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-secondary">Update tier</button>
+      </form>
+    </div>
+
+    <div class="profile-section card">
+      <h3>Account status</h3>
+      <form method="POST" action="/admin/customers/<%= user._id %>/status" class="inline-form">
+        <div class="field">
+          <label>Status</label>
+          <select name="status" required>
+            <option value="pending" <%= user.accountStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+            <option value="active" <%= user.accountStatus === 'active' ? 'selected' : '' %>>Active</option>
+            <option value="suspended" <%= user.accountStatus === 'suspended' ? 'selected' : '' %>>Suspended</option>
+            <option value="frozen" <%= user.accountStatus === 'frozen' ? 'selected' : '' %>>Frozen</option>
+            <option value="closed" <%= user.accountStatus === 'closed' ? 'selected' : '' %>>Closed</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-secondary">Update status</button>
+      </form>
+    </div>
+
+    <div class="profile-section card">
+      <h3>Recent transactions</h3>
+      <% if (transactions.length === 0) { %>
+        <div class="empty-state">No transactions yet.</div>
+      <% } else { %>
+        <% transactions.forEach(function(tx) { %>
+          <div class="tx-row">
+            <div>
+              <div class="tx-desc"><%= tx.description || tx.type %></div>
+              <div class="tx-meta"><%= new Date(tx.createdAt).toLocaleString() %></div>
+            </div>
+            <div style="text-align:right;">
+              <div class="tx-amount"><%= tx.currency %> <%= tx.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
+              <span class="badge badge-<%= tx.status === 'successful' ? 'success' : 'pending' %>"><%= tx.status %></span>
+            </div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('balanceForm').addEventListener('submit', function (e) {
+    e.preventDefault();
+    const form = e.target;
+    showLoadingSequence(['Processing balance update...']).then(() => form.submit());
+  });
+</script>

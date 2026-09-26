@@ -1,0 +1,49 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'customers' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Customers</h2>
+
+    <form method="GET" action="/admin/customers" class="admin-search">
+      <input type="text" name="q" placeholder="Name, email, phone, account #" value="<%= query.q || '' %>">
+      <select name="tier">
+        <option value="">All tiers</option>
+        <option value="1" <%= query.tier === '1' ? 'selected' : '' %>>Tier 1</option>
+        <option value="2" <%= query.tier === '2' ? 'selected' : '' %>>Tier 2</option>
+        <option value="3" <%= query.tier === '3' ? 'selected' : '' %>>Tier 3</option>
+      </select>
+      <select name="status">
+        <option value="">All statuses</option>
+        <option value="pending" <%= query.status === 'pending' ? 'selected' : '' %>>Pending</option>
+        <option value="active" <%= query.status === 'active' ? 'selected' : '' %>>Active</option>
+        <option value="suspended" <%= query.status === 'suspended' ? 'selected' : '' %>>Suspended</option>
+        <option value="frozen" <%= query.status === 'frozen' ? 'selected' : '' %>>Frozen</option>
+      </select>
+      <button type="submit" class="btn btn-secondary">Search</button>
+    </form>
+
+    <div class="card">
+      <% if (customers.length === 0) { %>
+        <div class="empty-state">No customers match that search.</div>
+      <% } else { %>
+        <table class="admin-table">
+          <thead>
+            <tr><th>Name</th><th>Account #</th><th>Country</th><th>Tier</th><th>Balance</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody>
+            <% customers.forEach(function(row) { %>
+              <tr>
+                <td><%= row.user.firstName %> <%= row.user.lastName %><br><span style="color:var(--color-ink-muted); font-size:0.8rem;"><%= row.user.email %></span></td>
+                <td><%= row.account ? row.account.accountNumber : '—' %></td>
+                <td><%= row.user.country %></td>
+                <td>Tier <%= row.account ? row.account.tier : 1 %></td>
+                <td><%= row.account ? row.account.currency + ' ' + row.account.totalBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) : '—' %></td>
+                <td><span class="badge badge-<%= row.user.accountStatus === 'active' ? 'success' : (row.user.accountStatus === 'pending' ? 'pending' : 'error') %>"><%= row.user.accountStatus %></span></td>
+                <td><a href="/admin/customers/<%= row.user._id %>" class="btn btn-secondary" style="padding:6px 12px;">Open</a></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>
