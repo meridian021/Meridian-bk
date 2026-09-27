@@ -102,9 +102,7 @@
   </div>
 </div>
 <script>
-  document.getElementById('externalTransferForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = e.target;
-    showLoadingSequence(['Submitting transfer request...', 'Sending to recipient bank...']).then(() => form.submit());
+  document.getElementById('externalTransferForm').addEventListener('submit', function () {
+    showLoadingSequence(['Submitting transfer request...', 'Sending to recipient bank...']);
   });
 </script>

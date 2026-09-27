@@ -96,9 +96,7 @@
   </div>
 </div>
 <script>
-  document.getElementById('balanceForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = e.target;
-    showLoadingSequence(['Processing balance update...']).then(() => form.submit());
+  document.getElementById('balanceForm').addEventListener('submit', function () {
+    showLoadingSequence(['Processing balance update...']);
   });
 </script>

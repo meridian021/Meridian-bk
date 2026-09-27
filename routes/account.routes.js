@@ -1,3 +1,7 @@
+const FixedDeposit = require("../models/FixedDeposit");
+const LockedFund = require("../models/LockedFund");
+const fixedDepositService = require("../services/fixedDepositService");
+const lockedFundsService = require("../services/lockedFundsService");
 const CardTopUp = require("../models/CardTopUp");
 const cardTopUpService = require("../services/cardTopUpService");
 const CryptoDeposit = require("../models/CryptoDeposit");
@@ -340,5 +344,196 @@ router.post("/crypto", requireAuth, async (req, res, next) => {
     next(err);
   }
 });
+// --- Fixed deposits ---
+router.get("/fixed-deposits", requireAuth, async (req, res, next) => {
+  try {
+    let deposits = await FixedDeposit.find({
+      userId: req.session.user.id,
+    }).sort({ createdAt: -1 });
+    deposits = await Promise.all(
+      deposits.map((fd) => fixedDepositService.syncFixedDeposit(fd)),
+    );
+    const settings = await SystemSetting.getSettings();
+    res.render("customer/fixed-deposits", {
+      title: "Fixed deposits",
+      deposits,
+      addresses: settings.cryptoAddresses,
+      error: null,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/fixed-deposits", requireAuth, async (req, res, next) => {
+  try {
+    await fixedDepositService.createFixedDeposit(req.session.user.id, req.body);
+    res.redirect("/account/fixed-deposits");
+  } catch (err) {
+    if (err.status === 400) {
+      const deposits = await FixedDeposit.find({
+        userId: req.session.user.id,
+      }).sort({ createdAt: -1 });
+      return res.status(400).render("customer/fixed-deposits", {
+        title: "Fixed deposits",
+        deposits,
+        error: err.publicMessage,
+      });
+    }
+    next(err);
+  }
+});
+
+router.post(
+  "/fixed-deposits/:id/extend",
+  requireAuth,
+  async (req, res, next) => {
+    try {
+      await fixedDepositService.extendMaturity(
+        req.params.id,
+        req.session.user.id,
+        req.body.newDate,
+      );
+      res.redirect("/account/fixed-deposits");
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+router.post(
+  "/fixed-deposits/:id/early-withdrawal",
+  requireAuth,
+  async (req, res, next) => {
+    try {
+      await fixedDepositService.requestEarlyWithdrawal(
+        req.params.id,
+        req.session.user.id,
+      );
+      res.redirect("/account/fixed-deposits");
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+router.post(
+  "/fixed-deposits/:id/pay-fee",
+  requireAuth,
+  async (req, res, next) => {
+    try {
+      const fd = await FixedDeposit.findOne({
+        _id: req.params.id,
+        userId: req.session.user.id,
+      });
+      const cryptoDepositService = require("../services/cryptoDepositService");
+      await cryptoDepositService.createDeposit(req.session.user.id, {
+        network: req.body.network,
+        amount: fd.earlyWithdrawalFeeAmount,
+        txReference: req.body.txReference,
+        purpose: "early_withdrawal_fee",
+        feeForModel: "FixedDeposit",
+        feeForId: fd._id,
+      });
+      res.redirect("/account/fixed-deposits");
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+// --- Locked funds ---
+router.get("/locked-funds", requireAuth, async (req, res, next) => {
+  try {
+    let funds = await LockedFund.find({ userId: req.session.user.id }).sort({
+      createdAt: -1,
+    });
+    funds = await Promise.all(
+      funds.map((lf) => lockedFundsService.syncLockedFund(lf)),
+    );
+    const settings = await SystemSetting.getSettings();
+    res.render("customer/locked-funds", {
+      title: "Locked funds",
+      funds,
+      addresses: settings.cryptoAddresses,
+      error: null,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/locked-funds", requireAuth, async (req, res, next) => {
+  try {
+    await lockedFundsService.createLockedFund(req.session.user.id, req.body);
+    res.redirect("/account/locked-funds");
+  } catch (err) {
+    if (err.status === 400) {
+      const funds = await LockedFund.find({ userId: req.session.user.id }).sort(
+        { createdAt: -1 },
+      );
+      return res.status(400).render("customer/locked-funds", {
+        title: "Locked funds",
+        funds,
+        error: err.publicMessage,
+      });
+    }
+    next(err);
+  }
+});
+
+router.post("/locked-funds/:id/extend", requireAuth, async (req, res, next) => {
+  try {
+    await lockedFundsService.extendUnlockDate(
+      req.params.id,
+      req.session.user.id,
+      req.body.newDate,
+    );
+    res.redirect("/account/locked-funds");
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post(
+  "/locked-funds/:id/early-withdrawal",
+  requireAuth,
+  async (req, res, next) => {
+    try {
+      await lockedFundsService.requestEarlyWithdrawal(
+        req.params.id,
+        req.session.user.id,
+      );
+      res.redirect("/account/locked-funds");
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+router.post(
+  "/locked-funds/:id/pay-fee",
+  requireAuth,
+  async (req, res, next) => {
+    try {
+      const lf = await LockedFund.findOne({
+        _id: req.params.id,
+        userId: req.session.user.id,
+      });
+      const cryptoDepositService = require("../services/cryptoDepositService");
+      await cryptoDepositService.createDeposit(req.session.user.id, {
+        network: req.body.network,
+        amount: lf.earlyWithdrawalFeeAmount,
+        txReference: req.body.txReference,
+        purpose: "early_withdrawal_fee",
+        feeForModel: "LockedFund",
+        feeForId: lf._id,
+      });
+      res.redirect("/account/locked-funds");
+    } catch (err) {
+      next(err);
+    }
+  },
+);
 
 module.exports = router;

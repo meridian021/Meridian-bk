@@ -1,0 +1,34 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'fixed-deposits' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Fixed deposits</h2>
+    <div class="card">
+      <% if (deposits.length === 0) { %>
+        <div class="empty-state">No fixed deposits yet.</div>
+      <% } else { %>
+        <table class="admin-table">
+          <thead><tr><th>Customer</th><th>Principal</th><th>Interest</th><th>Maturity</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <% deposits.forEach(function(fd) { %>
+              <tr>
+                <td><%= fd.userId.firstName %> <%= fd.userId.lastName %></td>
+                <td><%= fd.currency %> <%= fd.principal.toLocaleString(undefined, {minimumFractionDigits:2}) %></td>
+                <td><%= fd.currency %> <%= fd.accruedInterest.toLocaleString(undefined, {minimumFractionDigits:2}) %></td>
+                <td><%= new Date(fd.maturityDate).toDateString() %></td>
+                <td><span class="badge badge-<%= fd.status === 'held' ? 'error' : 'pending' %>"><%= fd.status.replace(/_/g, ' ') %></span></td>
+                <td>
+                  <% if (fd.status !== 'held') { %>
+                    <form method="POST" action="/admin/fixed-deposits/<%= fd._id %>/hold" style="display:inline-block;">
+                      <input type="text" name="reason" placeholder="Hold reason" required style="padding:6px 8px; border-radius:6px; border:1px solid var(--color-border); font-size:0.8rem; width:120px;">
+                      <button type="submit" class="btn btn-secondary" style="padding:6px 12px;">Hold</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>

@@ -54,9 +54,8 @@
   </div>
 </div>
 <script>
-  document.getElementById('profileForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = e.target;
-    showLoadingSequence(['Updating your account...']).then(() => form.submit());
+  document.getElementById('profileForm').addEventListener('submit', function () {
+    showLoadingSequence(['Updating your account...']);
   });
+  
 </script>

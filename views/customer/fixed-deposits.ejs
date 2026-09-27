@@ -1,0 +1,112 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'fixed-deposits' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Fixed deposits</h2>
+
+    <div class="card" style="margin-bottom:20px;">
+      <h3 style="margin-top:0;">Open a fixed deposit</h3>
+      <p style="color:var(--color-ink-muted); font-size:0.85rem;">Earns 0.3% daily interest, added to your deposit weekly. Principal and interest are only released at maturity.</p>
+      <% if (error) { %><div class="error-banner"><%= error %></div><% } %>
+      <form method="POST" action="/account/fixed-deposits">
+        <div class="field">
+          <label for="amount">Amount</label>
+          <input type="number" id="amount" name="amount" step="0.01" min="0.01" required>
+        </div>
+        <div class="field">
+          <label for="durationDays">Duration (days)</label>
+          <input type="number" id="durationDays" name="durationDays" min="7" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Create fixed deposit</button>
+      </form>
+    </div>
+
+    <% if (deposits.length === 0) { %>
+      <div class="card"><div class="empty-state">No fixed deposits<br>Start a fixed deposit when you're ready.</div></div>
+    <% } %>
+
+    <% deposits.forEach(function(fd) { %>
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="font-size:1.2rem; font-family:var(--font-display);"><%= fd.currency %> <%= fd.principal.toLocaleString(undefined, {minimumFractionDigits:2}) %></div>
+            <div style="font-size:0.85rem; color:var(--color-ink-muted); margin-top:4px;">Accrued interest: <%= fd.currency %> <%= fd.accruedInterest.toLocaleString(undefined, {minimumFractionDigits:2}) %></div>
+            <div style="font-size:0.85rem; color:var(--color-ink-muted);">Maturity: <%= new Date(fd.maturityDate).toDateString() %></div>
+          </div>
+          <span class="badge badge-<%= fd.status === 'matured' || fd.status === 'early_withdrawal_completed' ? 'success' : (fd.status === 'held' ? 'error' : 'pending') %>"><%= fd.status.replace(/_/g, ' ') %></span>
+        </div>
+
+        <% if (fd.status === 'held') { %>
+          <p style="color:var(--color-error); font-size:0.85rem; margin-top:10px;">On hold: <%= fd.holdReason %></p>
+        <% } %>
+
+        <% if (fd.status === 'active') { %>
+          <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+            <form method="POST" action="/account/fixed-deposits/<%= fd._id %>/extend" style="display:flex; gap:8px; align-items:center;">
+              <input type="date" name="newDate" required style="padding:8px 10px; border-radius:6px; border:1px solid var(--color-border);">
+              <button type="submit" class="btn btn-secondary" style="padding:8px 14px;">Extend date</button>
+            </form>
+            <form method="POST" action="/account/fixed-deposits/<%= fd._id %>/early-withdrawal">
+              <button type="submit" class="btn btn-secondary" style="padding:8px 14px;">Request early withdrawal</button>
+            </form>
+          </div>
+        <% } %>
+
+                <% if (fd.status === 'early_withdrawal_pending') { %>
+          <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--color-border);">
+            <p style="font-size:0.9rem;">Early withdrawal charge (10%): <strong><%= fd.currency %> <%= fd.earlyWithdrawalFeeAmount.toLocaleString(undefined, {minimumFractionDigits:2}) %></strong></p>
+            <p style="color:var(--color-ink-muted); font-size:0.82rem;">Pay this fee via crypto to release your funds.</p>
+            <form method="POST" action="/account/fixed-deposits/<%= fd._id %>/pay-fee" class="feePayForm" data-fd-id="<%= fd._id %>">
+              <div class="field">
+                <label>Network</label>
+                <select name="network" class="feeNetworkSelect" data-target="feeAddress-<%= fd._id %>" required>
+                  <option value="bitcoin">Bitcoin</option>
+                  <option value="ethereum">Ethereum</option>
+                  <option value="usdt">USDT</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Deposit address</label>
+                <div id="feeAddress-<%= fd._id %>" style="padding:12px 14px; border-radius:8px; border:1px solid var(--color-border); font-family:monospace; font-size:0.85rem; word-break:break-all; background:var(--color-bg);">
+                  <%= addresses.bitcoin %>
+                </div>
+              </div>
+              <div class="field">
+                <label>Transaction reference / hash</label>
+                <input type="text" name="txReference" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit fee payment</button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+    <% }); %>
+  </div>
+</div>
+<script>
+    initIntroCarousel('mb_intro_fixed_deposits', [
+    { icon: '💰', title: 'Grow your savings', text: 'Lock in an amount for a fixed period and earn 0.3% daily interest, added to your deposit every week.' },
+    { icon: '📅', title: 'Choose your own term', text: "Pick any duration that works for you. Need more time? You can push your maturity date forward at any time before it matures." },
+    { icon: '🔓', title: 'Need it early?', text: "You can request an early withdrawal any time — a small fee applies, payable by crypto, and your funds release right after." }
+  ]);
+  const feeAddresses = <%- JSON.stringify(addresses) %>;
+
+  document.querySelectorAll('.feeNetworkSelect').forEach(function (select) {
+    select.addEventListener('change', function () {
+      document.getElementById(this.dataset.target).textContent = feeAddresses[this.value];
+    });
+  });
+
+  document.querySelectorAll('form').forEach(function (form) {
+    form.addEventListener('submit', function () {
+      if (form.classList.contains('feePayForm')) {
+        showLoadingSequence(['Submitting fee payment...']);
+      } else if (form.action.includes('/early-withdrawal')) {
+        showLoadingSequence(['Processing early withdrawal request...']);
+      } else if (form.action.includes('/extend')) {
+        showLoadingSequence(['Extending maturity date...']);
+      } else if (form.action.endsWith('/fixed-deposits')) {
+        showLoadingSequence(['Creating fixed deposit...']);
+      }
+    });
+  });
+</script>

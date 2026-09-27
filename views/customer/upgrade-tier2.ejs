@@ -34,9 +34,7 @@
   </div>
 </div>
 <script>
-  document.getElementById('kycForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = e.target;
-    showLoadingSequence(['Uploading documents...', 'Submitting KYC application...']).then(() => form.submit());
+  document.getElementById('kycForm').addEventListener('submit', function () {
+    showLoadingSequence(['Uploading documents...', 'Submitting KYC application...']);
   });
 </script>

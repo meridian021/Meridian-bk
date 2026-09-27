@@ -485,3 +485,65 @@ input:disabled {
   background: var(--color-bg);
   color: var(--color-ink-muted);
 }
+/* --- Intro/welcome carousel --- */
+.intro-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 31, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 998;
+  padding: 24px;
+}
+.intro-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-modal);
+  max-width: 420px;
+  width: 100%;
+  padding: 36px 32px 28px;
+  text-align: center;
+}
+.intro-icon {
+  font-size: 2.2rem;
+  margin-bottom: 14px;
+}
+.intro-title {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+}
+.intro-text {
+  color: var(--color-ink-muted);
+  font-size: 0.92rem;
+  line-height: 1.6;
+  min-height: 72px;
+}
+.intro-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin: 20px 0 22px;
+}
+.intro-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-border);
+  transition: background 0.2s ease;
+}
+.intro-dot.active {
+  background: var(--color-primary);
+}
+.intro-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.intro-skip {
+  font-size: 0.82rem;
+  color: var(--color-ink-muted);
+  cursor: pointer;
+}

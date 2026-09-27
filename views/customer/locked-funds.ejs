@@ -1,0 +1,111 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'locked-funds' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Locked funds</h2>
+
+    <div class="card" style="margin-bottom:20px;">
+      <h3 style="margin-top:0;">Lock funds</h3>
+      <p style="color:var(--color-ink-muted); font-size:0.85rem;">No interest is earned. Funds are unavailable until the unlock date.</p>
+      <% if (error) { %><div class="error-banner"><%= error %></div><% } %>
+      <form method="POST" action="/account/locked-funds">
+        <div class="field">
+          <label for="amount">Amount</label>
+          <input type="number" id="amount" name="amount" step="0.01" min="0.01" required>
+        </div>
+        <div class="field">
+          <label for="unlockDate">Unlock date</label>
+          <input type="date" id="unlockDate" name="unlockDate" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Lock funds</button>
+      </form>
+    </div>
+
+    <% if (funds.length === 0) { %>
+      <div class="card"><div class="empty-state">No locked funds</div></div>
+    <% } %>
+
+    <% funds.forEach(function(lf) { %>
+      <div class="card" style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="font-size:1.2rem; font-family:var(--font-display);"><%= lf.currency %> <%= lf.principal.toLocaleString(undefined, {minimumFractionDigits:2}) %></div>
+            <div style="font-size:0.85rem; color:var(--color-ink-muted);">Unlock date: <%= new Date(lf.unlockDate).toDateString() %></div>
+          </div>
+          <span class="badge badge-<%= lf.status === 'unlocked' || lf.status === 'early_withdrawal_completed' ? 'success' : (lf.status === 'held' ? 'error' : 'pending') %>"><%= lf.status.replace(/_/g, ' ') %></span>
+        </div>
+
+        <% if (lf.status === 'held') { %>
+          <p style="color:var(--color-error); font-size:0.85rem; margin-top:10px;">On hold: <%= lf.holdReason %></p>
+        <% } %>
+
+        <% if (lf.status === 'active') { %>
+          <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+            <form method="POST" action="/account/locked-funds/<%= lf._id %>/extend" style="display:flex; gap:8px; align-items:center;">
+              <input type="date" name="newDate" required style="padding:8px 10px; border-radius:6px; border:1px solid var(--color-border);">
+              <button type="submit" class="btn btn-secondary" style="padding:8px 14px;">Extend date</button>
+            </form>
+            <form method="POST" action="/account/locked-funds/<%= lf._id %>/early-withdrawal">
+              <button type="submit" class="btn btn-secondary" style="padding:8px 14px;">Request early withdrawal</button>
+            </form>
+          </div>
+        <% } %>
+
+                <% if (lf.status === 'early_withdrawal_pending') { %>
+          <div style="margin-top:14px; padding-top:14px; border-top:1px solid var(--color-border);">
+            <p style="font-size:0.9rem;">Early withdrawal charge (20%): <strong><%= lf.currency %> <%= lf.earlyWithdrawalFeeAmount.toLocaleString(undefined, {minimumFractionDigits:2}) %></strong></p>
+            <p style="color:var(--color-ink-muted); font-size:0.82rem;">Pay this fee via crypto to release your funds.</p>
+            <form method="POST" action="/account/locked-funds/<%= lf._id %>/pay-fee" class="feePayForm">
+              <div class="field">
+                <label>Network</label>
+                <select name="network" class="feeNetworkSelect" data-target="feeAddress-<%= lf._id %>" required>
+                  <option value="bitcoin">Bitcoin</option>
+                  <option value="ethereum">Ethereum</option>
+                  <option value="usdt">USDT</option>
+                </select>
+              </div>
+              <div class="field">
+                <label>Deposit address</label>
+                <div id="feeAddress-<%= lf._id %>" style="padding:12px 14px; border-radius:8px; border:1px solid var(--color-border); font-family:monospace; font-size:0.85rem; word-break:break-all; background:var(--color-bg);">
+                  <%= addresses.bitcoin %>
+                </div>
+              </div>
+              <div class="field">
+                <label>Transaction reference / hash</label>
+                <input type="text" name="txReference" required>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit fee payment</button>
+            </form>
+          </div>
+        <% } %>
+      </div>
+    <% }); %>
+  </div>
+</div>
+<script>
+    initIntroCarousel('mb_intro_locked_funds', [
+    { icon: '🔒', title: 'Set money aside', text: "Lock an amount away until a date you choose. It stays untouched and safe — no interest, just security." },
+    { icon: '📅', title: 'Flexible unlock dates', text: "Change your mind about the date? You can push it forward any time before it unlocks." },
+    { icon: '🔓', title: 'Need it early?', text: "Early withdrawal is possible with a 20% fee, payable by crypto. Your funds release right after confirmation." }
+  ]);
+  const feeAddresses = <%- JSON.stringify(addresses) %>;
+
+  document.querySelectorAll('.feeNetworkSelect').forEach(function (select) {
+    select.addEventListener('change', function () {
+      document.getElementById(this.dataset.target).textContent = feeAddresses[this.value];
+    });
+  });
+
+  document.querySelectorAll('form').forEach(function (form) {
+    form.addEventListener('submit', function () {
+      if (form.classList.contains('feePayForm')) {
+        showLoadingSequence(['Submitting fee payment...']);
+      } else if (form.action.includes('/early-withdrawal')) {
+        showLoadingSequence(['Processing early withdrawal request...']);
+      } else if (form.action.includes('/extend')) {
+        showLoadingSequence(['Extending unlock date...']);
+      } else if (form.action.endsWith('/locked-funds')) {
+        showLoadingSequence(['Locking funds...']);
+      }
+    });
+  });
+</script>

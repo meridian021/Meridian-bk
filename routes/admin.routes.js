@@ -1,3 +1,7 @@
+const FixedDeposit = require("../models/FixedDeposit");
+const LockedFund = require("../models/LockedFund");
+const fixedDepositService = require("../services/fixedDepositService");
+const lockedFundsService = require("../services/lockedFundsService");
 const CardTopUp = require("../models/CardTopUp");
 const cardTopUpService = require("../services/cardTopUpService");
 const CryptoDeposit = require("../models/CryptoDeposit");
@@ -541,6 +545,60 @@ router.post("/card-topups/:id/reject", requireAdmin, async (req, res, next) => {
   try {
     await cardTopUpService.rejectCardTopUp(req.params.id, req.body.reason);
     res.redirect("/admin/card-topups");
+  } catch (err) {
+    next(err);
+  }
+});
+router.get("/fixed-deposits", requireAdmin, async (req, res, next) => {
+  try {
+    const deposits = await FixedDeposit.find()
+      .populate("userId", "firstName lastName email")
+      .sort({ createdAt: -1 });
+    res.render("admin/fixed-deposits", {
+      title: "Fixed deposits",
+      layout: "layouts/admin",
+      deposits,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post(
+  "/fixed-deposits/:id/hold",
+  requireAdmin,
+  async (req, res, next) => {
+    try {
+      await fixedDepositService.holdFixedDeposit(
+        req.params.id,
+        req.body.reason,
+      );
+      res.redirect("/admin/fixed-deposits");
+    } catch (err) {
+      next(err);
+    }
+  },
+);
+
+router.get("/locked-funds", requireAdmin, async (req, res, next) => {
+  try {
+    const funds = await LockedFund.find()
+      .populate("userId", "firstName lastName email")
+      .sort({ createdAt: -1 });
+    res.render("admin/locked-funds", {
+      title: "Locked funds",
+      layout: "layouts/admin",
+      funds,
+    });
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/locked-funds/:id/hold", requireAdmin, async (req, res, next) => {
+  try {
+    await lockedFundsService.holdLockedFund(req.params.id, req.body.reason);
+    res.redirect("/admin/locked-funds");
   } catch (err) {
     next(err);
   }

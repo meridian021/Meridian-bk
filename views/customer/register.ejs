@@ -166,15 +166,17 @@
     showStep(Math.max(current - 1, 1));
   });
 
-  form.addEventListener('submit', function (e) {
-    e.preventDefault();
-    if (!currentStepValid()) return;
+    form.addEventListener('submit', function (e) {
+    if (!currentStepValid()) {
+      e.preventDefault();
+      return;
+    }
     showLoadingSequence([
       'Creating your account...',
       'Setting up your banking profile...',
       'Generating your account information...',
       'Finalizing your application...'
-    ]).then(() => form.submit());
+    ]);
   });
 
   showStep(1);

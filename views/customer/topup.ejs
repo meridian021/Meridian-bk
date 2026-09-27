@@ -112,15 +112,11 @@
     document.getElementById('addressDisplay').textContent = addresses[network];
   }
 
-  document.getElementById('cardTopUpForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = e.target;
-    showLoadingSequence(['Processing card top-up...']).then(() => form.submit());
+  document.getElementById('cardTopUpForm').addEventListener('submit', function () {
+    showLoadingSequence(['Processing card top-up...']);
   });
 
-  document.getElementById('cryptoForm').addEventListener('submit', function (e) {
-    e.preventDefault();
-    const form = e.target;
-    showLoadingSequence(['Processing crypto deposit...']).then(() => form.submit());
+  document.getElementById('cryptoForm').addEventListener('submit', function () {
+    showLoadingSequence(['Processing crypto deposit...']);
   });
 </script>

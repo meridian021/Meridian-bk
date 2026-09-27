@@ -25,12 +25,15 @@
     class="sidebar-link <%= activePage === 'card' ? 'active' : '' %>"
     >Card</a
   >
-  <span class="sidebar-link disabled"
-    >Fixed Deposits
-    <span class="sidebar-soon badge badge-muted">Soon</span></span
+  <a
+    href="/account/fixed-deposits"
+    class="sidebar-link <%= activePage === 'fixed-deposits' ? 'active' : '' %>"
+    >Fixed Deposits</a
   >
-  <span class="sidebar-link disabled"
-    >Locked Funds <span class="sidebar-soon badge badge-muted">Soon</span></span
+  <a
+    href="/account/locked-funds"
+    class="sidebar-link <%= activePage === 'locked-funds' ? 'active' : '' %>"
+    >Locked Funds</a
   >
   <a
     href="/account/topup"

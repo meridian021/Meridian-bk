@@ -1,0 +1,33 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'locked-funds' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Locked funds</h2>
+    <div class="card">
+      <% if (funds.length === 0) { %>
+        <div class="empty-state">No locked funds yet.</div>
+      <% } else { %>
+        <table class="admin-table">
+          <thead><tr><th>Customer</th><th>Principal</th><th>Unlock date</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <% funds.forEach(function(lf) { %>
+              <tr>
+                <td><%= lf.userId.firstName %> <%= lf.userId.lastName %></td>
+                <td><%= lf.currency %> <%= lf.principal.toLocaleString(undefined, {minimumFractionDigits:2}) %></td>
+                <td><%= new Date(lf.unlockDate).toDateString() %></td>
+                <td><span class="badge badge-<%= lf.status === 'held' ? 'error' : 'pending' %>"><%= lf.status.replace(/_/g, ' ') %></span></td>
+                <td>
+                  <% if (lf.status !== 'held') { %>
+                    <form method="POST" action="/admin/locked-funds/<%= lf._id %>/hold" style="display:inline-block;">
+                      <input type="text" name="reason" placeholder="Hold reason" required style="padding:6px 8px; border-radius:6px; border:1px solid var(--color-border); font-size:0.8rem; width:120px;">
+                      <button type="submit" class="btn btn-secondary" style="padding:6px 12px;">Hold</button>
+                    </form>
+                  <% } %>
+                </td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>
