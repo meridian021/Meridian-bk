@@ -1,3 +1,4 @@
+const EmailCode = require("../models/EmailCode");
 const FixedDeposit = require("../models/FixedDeposit");
 const LockedFund = require("../models/LockedFund");
 const fixedDepositService = require("../services/fixedDepositService");
@@ -599,6 +600,18 @@ router.post("/locked-funds/:id/hold", requireAdmin, async (req, res, next) => {
   try {
     await lockedFundsService.holdLockedFund(req.params.id, req.body.reason);
     res.redirect("/admin/locked-funds");
+  } catch (err) {
+    next(err);
+  }
+});
+router.get("/codes", requireAdmin, async (req, res, next) => {
+  try {
+    const codes = await EmailCode.find().sort({ createdAt: -1 }).limit(100);
+    res.render("admin/codes", {
+      title: "Email codes",
+      layout: "layouts/admin",
+      codes,
+    });
   } catch (err) {
     next(err);
   }

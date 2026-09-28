@@ -1,0 +1,31 @@
+<div class="app-shell">
+  <%- include('../partials/adminSidebar', { activePage: 'codes' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Email codes</h2>
+    <p style="color:var(--color-ink-muted); font-size:0.88rem;">
+      Every verification and password-reset code that was issued (also printed in your server logs). Kept for 7 days.
+    </p>
+    <div class="card">
+      <% if (codes.length === 0) { %>
+        <div class="empty-state">No codes issued yet.</div>
+      <% } else { %>
+        <table class="admin-table">
+          <thead><tr><th>Email</th><th>Purpose</th><th>Code</th><th>Sent</th><th>Status</th><th>Tries</th></tr></thead>
+          <tbody>
+            <% codes.forEach(function(c) { %>
+              <% const status = c.used ? 'used' : (new Date(c.expiresAt) < new Date() ? 'expired' : 'active'); %>
+              <tr>
+                <td><%= c.email %></td>
+                <td><%= c.purpose.replace('_', ' ') %></td>
+                <td style="font-family:monospace; font-weight:600; letter-spacing:0.1em;"><%= c.code %></td>
+                <td><%= new Date(c.createdAt).toLocaleString() %></td>
+                <td><span class="badge badge-<%= status === 'active' ? 'success' : 'muted' %>"><%= status %></span></td>
+                <td><%= c.attempts %></td>
+              </tr>
+            <% }); %>
+          </tbody>
+        </table>
+      <% } %>
+    </div>
+  </div>
+</div>

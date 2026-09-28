@@ -1,0 +1,73 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'support' }) %>
+  <div class="app-main">
+    <h2 style="margin-top:0;">Support</h2>
+
+    <% if (sent) { %>
+      <div class="success-banner">
+        Thanks, we've received your message. Our team will reply to <strong><%= user.email %></strong>.
+        If you don't see our reply within a day, please check your spam or junk folder.
+      </div>
+    <% } %>
+
+    <div class="card" style="margin-bottom:20px;">
+      <h3 style="margin-top:0;">Send us a message</h3>
+      <p style="color:var(--color-ink-muted); font-size:0.88rem;">
+        Tell us what's going on and our team will reply by email to the address on your account.
+      </p>
+
+      <% if (error) { %><div class="error-banner"><%= error %></div><% } %>
+
+      <form method="POST" action="/account/support" id="supportForm">
+        <div class="field">
+          <label>Name</label>
+          <input type="text" value="<%= user.firstName %> <%= user.lastName %>" readonly>
+        </div>
+        <div class="field">
+          <label>Reply email</label>
+          <input type="text" value="<%= user.email %>" readonly>
+        </div>
+        <div class="field">
+          <label for="category">Category</label>
+          <select id="category" name="category" required>
+            <% categories.forEach(function(c) { %>
+              <option value="<%= c %>" <%= formData.category === c ? 'selected' : '' %>><%= c %></option>
+            <% }); %>
+          </select>
+        </div>
+        <div class="field">
+          <label for="subject">Subject</label>
+          <input type="text" id="subject" name="subject" maxlength="150" value="<%= formData.subject || '' %>" required>
+        </div>
+        <div class="field">
+          <label for="message">Message</label>
+          <textarea id="message" name="message" rows="6" maxlength="5000" required><%= formData.message || '' %></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Send message</button>
+      </form>
+    </div>
+
+    <div class="card">
+      <h3 style="margin-top:0;">Your messages</h3>
+      <% if (messages.length === 0) { %>
+        <div class="empty-state">No support conversations yet.</div>
+      <% } else { %>
+        <% messages.forEach(function(m) { %>
+          <div class="message-item">
+            <div style="display:flex; justify-content:space-between; gap:12px; align-items:flex-start;">
+              <strong><%= m.subject %></strong>
+              <span class="badge badge-muted"><%= m.category %></span>
+            </div>
+            <div class="tx-meta" style="margin:4px 0 8px;"><%= new Date(m.createdAt).toLocaleString() %> · Sent</div>
+            <div style="font-size:0.9rem; white-space:pre-wrap;"><%= m.message %></div>
+          </div>
+        <% }); %>
+      <% } %>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('supportForm').addEventListener('submit', function () {
+    showLoadingSequence(['Sending your message...']);
+  });
+</script>

@@ -1,6 +1,9 @@
 <section class="container-narrow" style="padding: 64px 24px;">
   <div class="card">
     <h2>Log in</h2>
+    <% if (typeof success !== 'undefined' && success) { %>
+      <div class="success-banner"><%= success %></div>
+    <% } %>
     <% if (error) { %>
       <div class="error-banner"><%= error %></div>
     <% } %>
@@ -13,6 +16,9 @@
         <label for="password">Password</label>
         <input type="password" id="password" name="password" required>
       </div>
+      <div style="text-align:right; margin:-6px 0 16px;">
+        <a href="/auth/forgot" style="font-size:0.85rem; color:var(--color-primary); font-weight:500;">Forgot password?</a>
+      </div>
       <button type="submit" class="btn btn-primary btn-block">Log in</button>
     </form>
     <p style="margin-top: 16px; font-size: 0.85rem; color: var(--color-ink-muted);">
@@ -20,8 +26,7 @@
     </p>
   </div>
 </section>
-  
-  <script>
+<script>
   document.getElementById('loginForm').addEventListener('submit', function () {
     showLoadingSequence(['Verifying your information...']);
   });

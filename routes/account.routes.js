@@ -1,3 +1,5 @@
+const SupportMessage = require("../models/SupportMessage");
+const supportService = require("../services/supportService");
 const FixedDeposit = require("../models/FixedDeposit");
 const LockedFund = require("../models/LockedFund");
 const fixedDepositService = require("../services/fixedDepositService");
@@ -535,5 +537,61 @@ router.post(
     }
   },
 );
+// --- Support ---
+async function renderSupport(
+  req,
+  res,
+  { error = null, formData = {}, status = 200 } = {},
+) {
+  const user = await User.findById(req.session.user.id);
+  const messages = await SupportMessage.find({ userId: user._id }).sort({
+    createdAt: -1,
+  });
+  res.status(status).render("customer/support", {
+    title: "Support",
+    user,
+    messages,
+    categories: supportService.SUPPORT_CATEGORIES,
+    error,
+    formData,
+    sent: req.query.sent === "1",
+  });
+}
+
+router.get("/support", requireAuth, async (req, res, next) => {
+  try {
+    await renderSupport(req, res);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/support", requireAuth, async (req, res, next) => {
+  try {
+    const user = await User.findById(req.session.user.id);
+
+    // Name and email always come from the account, never from the form.
+    await supportService.submitMessage({
+      userId: user._id,
+      source: "support",
+      name: `${user.firstName} ${user.lastName}`,
+      email: user.email,
+      category: req.body.category,
+      subject: req.body.subject,
+      message: req.body.message,
+    });
+
+    res.redirect("/account/support?sent=1");
+  } catch (err) {
+    if (err.status === 400) {
+      return renderSupport(req, res, {
+        error: err.publicMessage,
+        formData: req.body,
+        status: 400,
+      });
+    }
+    next(err);
+  }
+});
 
 module.exports = router;
