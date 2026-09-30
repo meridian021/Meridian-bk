@@ -1,8 +1,203 @@
-<section class="container" style="padding: 96px 24px 64px; text-align: center;">
-  <h1 style="font-size: 2.4rem; max-width: 640px; margin: 0 auto 16px;">Banking that feels considered.</h1>
-  <p style="color: var(--color-ink-muted); max-width: 480px; margin: 0 auto 32px;">
-    <%= bankName %> is a demonstration banking platform — open an account, hold a balance,
-    and try transfers, cards, and deposits in a fully connected sandbox.
-  </p>
-  <a href="/auth/register" class="btn btn-primary" style="padding: 14px 28px;">Open an account</a>
+<section class="home-hero">
+  <div class="container home-hero-inner">
+    <div class="home-hero-copy">
+      <div class="home-eyebrow">
+        <span class="home-eyebrow-dot"></span>
+        A considered digital banking experience
+      </div>
+
+      <h1>
+        Banking,<br />
+        thoughtfully designed.
+      </h1>
+
+      <p class="home-hero-text">
+        <%= bankName %> brings your everyday banking experience together in one
+        calm, connected place — from accounts and transfers to cards, deposits,
+        and more.
+      </p>
+
+      <div class="home-hero-actions">
+        <a href="/auth/register" class="btn btn-primary home-primary-btn">
+          Open an account
+        </a>
+
+        <a href="/auth/login" class="home-secondary-link">
+          Already a member?
+          <span>Log in →</span>
+        </a>
+      </div>
+
+      <div class="home-note">
+        <span>●</span>
+        Secure account access · Connected banking experience · Demo environment
+      </div>
+    </div>
+
+    <div class="home-hero-visual" aria-hidden="true">
+      <div class="home-balance-card">
+        <div class="balance-card-top">
+          <div>
+            <span class="balance-label">DEMO ACCOUNT</span>
+            <strong><%= bankName %></strong>
+          </div>
+
+          <div class="balance-mark">M</div>
+        </div>
+
+        <div class="balance-main">
+          <span>Available balance</span>
+          <strong>$24,680.00</strong>
+        </div>
+
+        <div class="balance-card-bottom">
+          <span>Everyday Account</span>
+          <span>•••• 4821</span>
+        </div>
+      </div>
+
+      <div class="home-floating-card home-floating-transfer">
+        <div class="floating-icon">↗</div>
+        <div>
+          <span>Recent transfer</span>
+          <strong>+$1,240.00</strong>
+        </div>
+      </div>
+
+      <div class="home-floating-card home-floating-secure">
+        <div class="floating-icon">✓</div>
+        <div>
+          <span>Account status</span>
+          <strong>Active</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="home-intro">
+  <div class="container">
+    <div class="home-section-heading">
+      <span class="home-eyebrow">Everything in one place</span>
+
+      <h2>Banking without the unnecessary noise.</h2>
+
+      <p>
+        Designed around the things that matter most, with a clear view of your
+        accounts, money, transfers, and financial activity.
+      </p>
+    </div>
+
+    <div class="home-feature-grid">
+      <article class="home-feature">
+        <div class="home-feature-number">01</div>
+        <h3>One clear view</h3>
+        <p>
+          See your account balance, available funds, activity, and important
+          account information from one dashboard.
+        </p>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-number">02</div>
+        <h3>Move money simply</h3>
+        <p>
+          Manage internal and international transfer experiences through a
+          straightforward, connected workflow.
+        </p>
+      </article>
+
+      <article class="home-feature">
+        <div class="home-feature-number">03</div>
+        <h3>Built around you</h3>
+        <p>
+          Cards, deposits, locked funds, support, and account verification are
+          brought together in one consistent experience.
+        </p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="home-experience">
+  <div class="container home-experience-inner">
+    <div class="home-experience-copy">
+      <span class="home-eyebrow">A calmer way to bank</span>
+
+      <h2>Clarity where you need it.</h2>
+
+      <p>
+        From your first account setup to everyday activity, Meridian is designed
+        to keep important information easy to understand and easy to find.
+      </p>
+
+      <div class="home-check-list">
+        <div>
+          <span>✓</span>
+          Clear account information
+        </div>
+
+        <div>
+          <span>✓</span>
+          Connected transaction history
+        </div>
+
+        <div>
+          <span>✓</span>
+          Simple account management
+        </div>
+      </div>
+    </div>
+
+    <div class="home-experience-panel">
+      <div class="experience-panel-top">
+        <span>Account overview</span>
+        <span class="experience-status">ACTIVE</span>
+      </div>
+
+      <div class="experience-balance">
+        <span>Total balance</span>
+        <strong>$24,680.00</strong>
+      </div>
+
+      <div class="experience-lines">
+        <div>
+          <span>Available</span>
+          <strong>$21,180.00</strong>
+        </div>
+
+        <div>
+          <span>Locked funds</span>
+          <strong>$3,500.00</strong>
+        </div>
+      </div>
+
+      <div class="experience-progress">
+        <span></span>
+      </div>
+
+      <div class="experience-caption">Demo account information</div>
+    </div>
+  </div>
+</section>
+
+<section class="home-cta">
+  <div class="container">
+    <div class="home-cta-card">
+      <div>
+        <span class="home-eyebrow">Begin your experience</span>
+
+        <h2>A better banking experience starts with clarity.</h2>
+
+        <p>
+          Create a demo account and explore the connected Meridian banking
+          experience.
+        </p>
+      </div>
+
+      <a href="/auth/register" class="btn btn-primary home-cta-btn">
+        Open an account
+      </a>
+    </div>
+  </div>
 </section>
