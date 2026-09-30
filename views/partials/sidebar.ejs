@@ -1,48 +1,79 @@
-<div class="sidebar">
+<aside class="sidebar dashboard-sidebar">
+  <div class="sidebar-label">ACCOUNT</div>
+
   <a
     href="/account/dashboard"
     class="sidebar-link <%= activePage === 'overview' ? 'active' : '' %>"
-    >Overview</a
   >
+    <span class="sidebar-icon">⌂</span>
+    <span>Overview</span>
+  </a>
+
   <a
     href="/account/transactions"
     class="sidebar-link <%= activePage === 'transactions' ? 'active' : '' %>"
-    >Transactions</a
   >
-  <a
-    href="/account/profile"
-    class="sidebar-link <%= activePage === 'profile' ? 'active' : '' %>"
-    >Profile</a
-  >
+    <span class="sidebar-icon">↔</span>
+    <span>Transactions</span>
+  </a>
 
   <a
     href="/account/transfers"
     class="sidebar-link <%= activePage === 'transfers' ? 'active' : '' %>"
-    >Transfers</a
   >
+    <span class="sidebar-icon">↗</span>
+    <span>Transfers</span>
+  </a>
+
   <a
     href="/account/card"
     class="sidebar-link <%= activePage === 'card' ? 'active' : '' %>"
-    >Card</a
   >
+    <span class="sidebar-icon">▣</span>
+    <span>Card</span>
+  </a>
+
+  <div class="sidebar-label sidebar-label-spaced">SAVINGS & FUNDS</div>
+
   <a
     href="/account/fixed-deposits"
     class="sidebar-link <%= activePage === 'fixed-deposits' ? 'active' : '' %>"
-    >Fixed Deposits</a
   >
+    <span class="sidebar-icon">◫</span>
+    <span>Fixed Deposits</span>
+  </a>
+
   <a
     href="/account/locked-funds"
     class="sidebar-link <%= activePage === 'locked-funds' ? 'active' : '' %>"
-    >Locked Funds</a
   >
+    <span class="sidebar-icon">◇</span>
+    <span>Locked Funds</span>
+  </a>
+
   <a
     href="/account/topup"
     class="sidebar-link <%= activePage === 'topup' ? 'active' : '' %>"
-    >Top Up</a
   >
+    <span class="sidebar-icon">+</span>
+    <span>Top Up</span>
+  </a>
+
+  <div class="sidebar-label sidebar-label-spaced">PERSONAL</div>
+
+  <a
+    href="/account/profile"
+    class="sidebar-link <%= activePage === 'profile' ? 'active' : '' %>"
+  >
+    <span class="sidebar-icon">○</span>
+    <span>Profile</span>
+  </a>
+
   <a
     href="/account/support"
     class="sidebar-link <%= activePage === 'support' ? 'active' : '' %>"
-    >Support</a
   >
-</div>
+    <span class="sidebar-icon">?</span>
+    <span>Support</span>
+  </a>
+</aside>

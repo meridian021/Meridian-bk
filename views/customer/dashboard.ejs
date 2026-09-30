@@ -1,74 +1,308 @@
-<div class="app-shell">
+<div class="app-shell dashboard-shell">
   <%- include('../partials/sidebar', { activePage: 'overview' }) %>
-  <div class="app-main">
-    <div class="balance-hero" style="padding-top:0;">
-      <p style="color: var(--color-ink-muted); margin: 0;">Good to see you, <%= user.firstName %></p>
-      <div class="balance-amount"><%= account.currency %> <%= account.totalBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
-      <div class="balance-grid">
-        <div>
-          <div class="label">Available</div>
-          <div class="value"><%= account.currency %> <%= account.availableBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
-        </div>
-        <div>
-          <div class="label">Locked</div>
-          <div class="value"><%= account.currency %> <%= account.lockedBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
-        </div>
+
+  <div class="app-main dashboard-page">
+
+    <!-- Dashboard header -->
+    <div class="dashboard-header">
+      <div>
+        <p class="dashboard-eyebrow">ACCOUNT OVERVIEW</p>
+        <h1>Good to see you, <%= user.firstName %>.</h1>
+        <p class="dashboard-subtitle">
+          Here's a clear view of your account and recent activity.
+        </p>
+      </div>
+
+      <div class="dashboard-status">
+        <span class="status-dot"></span>
+        <span><%= account.status %></span>
       </div>
     </div>
 
-    <div class="quick-actions">
-      <button class="btn btn-secondary" disabled>Send money</button>
-      <button class="btn btn-secondary" disabled>Receive money</button>
-      <button class="btn btn-secondary" disabled>Deposit</button>
-      <button class="btn btn-secondary" disabled>Cards</button>
-      <button class="btn btn-secondary" disabled>Lock funds</button>
-    </div>
-    <p style="font-size:0.8rem; color: var(--color-ink-muted); margin-top:-12px;">Quick actions activate as each feature is built in upcoming phases.</p>
-    <% if (account.tier < 3) { %>
-  <div class="card" style="margin: 16px 0; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-    <div>
-      <strong>Current tier: Tier <%= account.tier %></strong>
-      <p style="margin:4px 0 0; color:var(--color-ink-muted); font-size:0.85rem;">Upgrade to Tier <%= account.tier + 1 %> for higher transfer limits.</p>
-    </div>
-    <a href="/account/upgrade" class="btn btn-primary">Upgrade</a>
-  </div>
-<% } %>
-    <div class="card" style="margin: 24px 0;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
-        <h3 style="margin:0;">Recent transactions</h3>
-        <a href="/account/transactions" style="font-size:0.85rem; color:var(--color-primary); font-weight:500;">View all</a>
-      </div>
-      <% if (recentTransactions.length === 0) { %>
-        <div class="empty-state">
-          No transactions yet.<br>Your completed transactions will appear here.
-        </div>
-      <% } else { %>
-        <% recentTransactions.forEach(function(tx) { %>
-          <div class="tx-row">
-            <div>
-              <div class="tx-desc"><%= tx.description || tx.type %></div>
-              <div class="tx-meta"><%= new Date(tx.createdAt).toLocaleDateString() %></div>
-            </div>
-            <div style="text-align:right;">
-              <div class="tx-amount"><%= tx.currency %> <%= tx.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
-              <span class="badge badge-<%= tx.status === 'successful' ? 'success' : (tx.status === 'pending' ? 'pending' : 'error') %>"><%= tx.status %></span>
-            </div>
+
+    <!-- Main balance card -->
+    <section class="account-balance-card">
+
+      <div class="account-balance-top">
+        <div>
+          <span class="account-card-label">TOTAL BALANCE</span>
+          <div class="account-balance-number">
+            <%= account.currency %>
+            <%= account.totalBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) %>
           </div>
-        <% }); %>
-      <% } %>
-    </div>
+        </div>
 
-    <div class="card">
-      <h3 style="margin-bottom: 12px;">Account information</h3>
-      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 12px; font-size: 0.9rem;">
-        <div><span style="color:var(--color-ink-muted);">Account number</span><br><%= account.accountNumber %></div>
-        <div><span style="color:var(--color-ink-muted);">Tier</span><br>Tier <%= account.tier %></div>
-        <div><span style="color:var(--color-ink-muted);">Country</span><br><%= account.country %></div>
-        <div><span style="color:var(--color-ink-muted);">Currency</span><br><%= account.currency %></div>
-        <div><span style="color:var(--color-ink-muted);">Status</span><br>
-          <span class="badge badge-<%= account.status === 'active' ? 'success' : 'pending' %>"><%= account.status %></span>
+        <div class="account-card-mark">M</div>
+      </div>
+
+      <div class="account-card-bottom">
+
+        <div>
+          <span class="account-card-label">AVAILABLE</span>
+          <strong>
+            <%= account.currency %>
+            <%= account.availableBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) %>
+          </strong>
+        </div>
+
+        <div>
+          <span class="account-card-label">LOCKED</span>
+          <strong>
+            <%= account.currency %>
+            <%= account.lockedBalance.toLocaleString(undefined, {minimumFractionDigits: 2}) %>
+          </strong>
+        </div>
+
+        <div class="account-number-display">
+          <span class="account-card-label">ACCOUNT</span>
+          <strong>
+            •••• <%= String(account.accountNumber).slice(-4) %>
+          </strong>
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- Quick actions -->
+    <section class="dashboard-section">
+      <div class="section-heading-row">
+        <div>
+          <h2>Quick actions</h2>
+          <p>Manage your money from one place.</p>
         </div>
       </div>
+
+      <div class="dashboard-actions">
+
+  <a href="/account/transfers" class="dashboard-action">
+    <span class="action-icon">↗</span>
+    <span>
+      <strong>Send money</strong>
+      <small>Transfer funds</small>
+    </span>
+    <span class="action-arrow">→</span>
+  </a>
+
+  <a href="/account/topup" class="dashboard-action">
+    <span class="action-icon">+</span>
+    <span>
+      <strong>Deposit</strong>
+      <small>Add funds</small>
+    </span>
+    <span class="action-arrow">→</span>
+  </a>
+
+  <a href="/account/card" class="dashboard-action">
+    <span class="action-icon">▣</span>
+    <span>
+      <strong>Cards</strong>
+      <small>Manage your card</small>
+    </span>
+    <span class="action-arrow">→</span>
+  </a>
+
+  <a href="/account/fixed-deposits" class="dashboard-action">
+    <span class="action-icon">◫</span>
+    <span>
+      <strong>Fixed deposits</strong>
+      <small>Grow your funds</small>
+    </span>
+    <span class="action-arrow">→</span>
+  </a>
+
+</div>
+      <p class="dashboard-coming-soon">
+        Some account features will become available as they are introduced.
+      </p>
+    </section>
+
+
+    <!-- Middle dashboard grid -->
+    <div class="dashboard-grid">
+
+      <!-- Account details -->
+      <section class="dashboard-panel">
+        <div class="panel-heading">
+          <div>
+            <h2>Account details</h2>
+            <p>Your current account information.</p>
+          </div>
+        </div>
+
+        <div class="account-details-list">
+
+          <div class="account-detail">
+            <span>Account number</span>
+            <strong><%= account.accountNumber %></strong>
+          </div>
+
+          <div class="account-detail">
+            <span>Currency</span>
+            <strong><%= account.currency %></strong>
+          </div>
+
+          <div class="account-detail">
+            <span>Country</span>
+            <strong><%= account.country %></strong>
+          </div>
+
+          <div class="account-detail">
+            <span>Account tier</span>
+            <strong>Tier <%= account.tier %></strong>
+          </div>
+
+        </div>
+      </section>
+
+
+      <!-- Tier -->
+      <section class="dashboard-panel tier-panel">
+
+        <div class="panel-heading">
+          <div>
+            <h2>Account tier</h2>
+            <p>Your current account level.</p>
+          </div>
+
+          <span class="tier-badge">
+            Tier <%= account.tier %>
+          </span>
+        </div>
+
+        <div class="tier-content">
+
+          <div class="tier-indicator">
+            <span class="tier-step active"></span>
+            <span class="tier-line"></span>
+            <span class="tier-step <%= account.tier >= 2 ? 'active' : '' %>"></span>
+            <span class="tier-line"></span>
+            <span class="tier-step <%= account.tier >= 3 ? 'active' : '' %>"></span>
+          </div>
+
+          <% if (account.tier < 3) { %>
+            <p>
+              Upgrade to Tier <%= account.tier + 1 %> when you're ready for
+              higher transfer limits.
+            </p>
+
+            <a href="/account/upgrade" class="tier-button">
+              View upgrade options
+              <span>→</span>
+            </a>
+          <% } else { %>
+            <p>
+              You are currently on the highest available account tier.
+            </p>
+          <% } %>
+
+        </div>
+      </section>
+
     </div>
+
+
+    <!-- Transactions -->
+    <section class="dashboard-panel transactions-panel">
+
+      <div class="panel-heading">
+        <div>
+          <h2>Recent transactions</h2>
+          <p>Your latest account activity.</p>
+        </div>
+
+        <a href="/account/transactions" class="panel-link">
+          View all <span>→</span>
+        </a>
+      </div>
+
+      <% if (recentTransactions.length === 0) { %>
+
+        <div class="transactions-empty">
+          <div class="empty-icon">↔</div>
+          <h3>No transactions yet</h3>
+          <p>
+            Your completed account activity will appear here.
+          </p>
+        </div>
+
+      <% } else { %>
+
+        <div class="transaction-list">
+
+          <% recentTransactions.forEach(function(tx) { %>
+
+            <div class="dashboard-transaction">
+
+              <div class="transaction-left">
+
+                <div class="transaction-icon">
+                  <%= String(tx.type || 'T').charAt(0).toUpperCase() %>
+                </div>
+
+                <div>
+                  <strong>
+                    <%= tx.description || tx.type %>
+                  </strong>
+
+                  <span>
+                    <%= new Date(tx.createdAt).toLocaleDateString(undefined, {
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
+                    }) %>
+                  </span>
+                </div>
+
+              </div>
+
+              <div class="transaction-right">
+
+                <strong>
+                  <%= tx.currency %>
+                  <%= tx.amount.toLocaleString(undefined, {
+                    minimumFractionDigits: 2
+                  }) %>
+                </strong>
+
+                <span class="badge badge-<%= tx.status === 'successful'
+                  ? 'success'
+                  : (tx.status === 'pending' ? 'pending' : 'error') %>">
+                  <%= tx.status %>
+                </span>
+
+              </div>
+
+            </div>
+
+          <% }); %>
+
+        </div>
+
+      <% } %>
+
+    </section>
+
+
+    <!-- Account status -->
+    <section class="account-status-strip">
+
+      <div class="account-status-icon">
+        ✓
+      </div>
+
+      <div>
+        <strong>Your account is <%= account.status %></strong>
+        <p>
+          Your Meridian account is currently active and available for use.
+        </p>
+      </div>
+
+      <a href="/account/profile">
+        Manage profile →
+      </a>
+
+    </section>
+
   </div>
 </div>
