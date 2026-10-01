@@ -2147,3 +2147,47 @@ input:disabled {
     display: block;
   }
 }
+/* --- Receipt --- */
+.receipt-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-card);
+  padding: 32px;
+  max-width: 420px;
+  margin: 20px auto 0;
+}
+.receipt-status-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  font-size: 1.4rem;
+}
+.receipt-status-icon.badge-success {
+  background: #e6f2eb;
+  color: var(--color-success);
+}
+.receipt-status-icon.badge-pending {
+  background: #fbf1e1;
+  color: var(--color-pending);
+}
+.receipt-status-icon.badge-error {
+  background: #fbeae8;
+  color: var(--color-error);
+}
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+  font-size: 0.9rem;
+}
+.receipt-row:last-child {
+  border-bottom: none;
+}
+.receipt-row span:first-child {
+  color: var(--color-ink-muted);
+}

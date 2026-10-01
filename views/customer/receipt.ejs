@@ -1,0 +1,23 @@
+<div class="app-shell">
+  <%- include('../partials/sidebar', { activePage: 'transactions' }) %>
+  <div class="app-main">
+    <a href="/account/transactions" style="font-size:0.85rem; color:var(--color-ink-muted);">← Back to transactions</a>
+
+    <div class="receipt-card">
+      <div style="text-align:center; margin-bottom:20px;">
+        <div class="receipt-status-icon badge-<%= transaction.status === 'successful' ? 'success' : (transaction.status === 'pending' ? 'pending' : 'error') %>">
+          <%= transaction.status === 'successful' ? '✓' : (transaction.status === 'pending' ? '◷' : '×') %>
+        </div>
+        <h2 style="margin:12px 0 4px; text-transform:capitalize;"><%= transaction.status %></h2>
+        <div style="font-size:1.8rem; font-family:var(--font-display);"><%= transaction.currency %> <%= transaction.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
+      </div>
+
+      <div class="receipt-row"><span>Type</span><span style="text-transform:capitalize;"><%= transaction.type.replace(/_/g, ' ') %></span></div>
+      <% if (transaction.description) { %><div class="receipt-row"><span>Description</span><span><%= transaction.description %></span></div><% } %>
+      <% if (transaction.recipient) { %><div class="receipt-row"><span>Recipient</span><span><%= transaction.recipient %></span></div><% } %>
+      <div class="receipt-row"><span>Reference</span><span><%= transaction.reference || transaction.transactionId %></span></div>
+      <div class="receipt-row"><span>Date</span><span><%= new Date(transaction.createdAt).toLocaleString() %></span></div>
+      <% if (transaction.completedAt) { %><div class="receipt-row"><span>Completed</span><span><%= new Date(transaction.completedAt).toLocaleString() %></span></div><% } %>
+    </div>
+  </div>
+</div>

@@ -8,17 +8,17 @@
           No transactions yet.<br>Your completed transactions will appear here.
         </div>
       <% } else { %>
-        <% transactions.forEach(function(tx) { %>
-          <div class="tx-row">
+                <% transactions.forEach(function(tx) { %>
+          <a href="/account/transactions/<%= tx._id %>" class="tx-row" style="display:flex;">
             <div>
               <div class="tx-desc"><%= tx.description || tx.type %></div>
               <div class="tx-meta"><%= new Date(tx.createdAt).toLocaleString() %> · <%= tx.reference || tx.transactionId %></div>
             </div>
-            <div style="text-align:right;">
+            <div style="text-align:right; margin-left:auto;">
               <div class="tx-amount"><%= tx.currency %> <%= tx.amount.toLocaleString(undefined, {minimumFractionDigits: 2}) %></div>
               <span class="badge badge-<%= tx.status === 'successful' ? 'success' : (tx.status === 'pending' ? 'pending' : 'error') %>"><%= tx.status %></span>
             </div>
-          </div>
+          </a>
         <% }); %>
       <% } %>
     </div>

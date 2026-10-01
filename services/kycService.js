@@ -62,4 +62,28 @@ async function rejectKyc(applicationId, reviewerId, reason) {
   return application;
 }
 
-module.exports = { approveKyc, rejectKyc };
+async function requestMoreInfo(applicationId, reviewerId, note) {
+  const application = await KYCApplication.findById(applicationId);
+  if (!application) throw new Error("Application not found");
+
+  const user = await User.findById(application.userId);
+
+  application.status = "more_info_required";
+  application.reviewNote = note;
+  application.reviewedAt = new Date();
+  application.reviewedBy = reviewerId;
+  await application.save();
+
+  user.kycStatus = "more_info_required";
+  await user.save();
+
+  await sendEmail({
+    to: user.email,
+    subject: "More information needed for your verification",
+    html: `<p>Hi ${user.firstName}, we need a bit more information to continue reviewing your application.</p><p>${note || "Please check your account for details."}</p>`,
+  });
+
+  return application;
+}
+
+module.exports = { approveKyc, rejectKyc, requestMoreInfo };

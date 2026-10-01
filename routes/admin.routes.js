@@ -11,7 +11,11 @@ const Transfer = require("../models/Transfer");
 const transferService = require("../services/transferService");
 const KYCApplication = require("../models/KYCApplication");
 const Document = require("../models/Document");
-const { approveKyc, rejectKyc } = require("../services/kycService");
+const {
+  approveKyc,
+  rejectKyc,
+  requestMoreInfo,
+} = require("../services/kycService");
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const router = express.Router();
@@ -234,7 +238,10 @@ router.post("/customers/:id/status", requireAdmin, async (req, res, next) => {
 // --- KYC review ---
 router.get("/kyc", requireAdmin, async (req, res, next) => {
   try {
-    const applications = await KYCApplication.find({ status: "pending" })
+    const filter = {};
+    if (req.query.status) filter.status = req.query.status;
+
+    const applications = await KYCApplication.find(filter)
       .populate("userId", "firstName lastName email")
       .sort({ createdAt: -1 });
 
@@ -242,6 +249,7 @@ router.get("/kyc", requireAdmin, async (req, res, next) => {
       title: "KYC review",
       layout: "layouts/admin",
       applications,
+      statusFilter: req.query.status || "",
     });
   } catch (err) {
     next(err);
@@ -285,6 +293,15 @@ router.post("/kyc/:id/approve", requireAdmin, async (req, res, next) => {
 router.post("/kyc/:id/reject", requireAdmin, async (req, res, next) => {
   try {
     await rejectKyc(req.params.id, req.session.user.id, req.body.reason);
+    res.redirect("/admin/kyc");
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.post("/kyc/:id/more-info", requireAdmin, async (req, res, next) => {
+  try {
+    await requestMoreInfo(req.params.id, req.session.user.id, req.body.note);
     res.redirect("/admin/kyc");
   } catch (err) {
     next(err);

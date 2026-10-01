@@ -24,7 +24,21 @@ router.get("/dashboard", requireAuth, async (req, res, next) => {
     next(err);
   }
 });
-
+router.get("/transactions/:id", requireAuth, async (req, res, next) => {
+  try {
+    const transaction = await Transaction.findOne({
+      _id: req.params.id,
+      userId: req.session.user.id,
+    });
+    if (!transaction)
+      return res
+        .status(404)
+        .render("errors/404", { title: "Not found", layout: false });
+    res.render("customer/receipt", { title: "Receipt", transaction });
+  } catch (err) {
+    next(err);
+  }
+});
 router.get("/transactions", requireAuth, async (req, res, next) => {
   try {
     const page = Math.max(parseInt(req.query.page) || 1, 1);

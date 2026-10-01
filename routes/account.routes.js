@@ -1,3 +1,4 @@
+const bcrypt = require("bcryptjs");
 const SupportMessage = require("../models/SupportMessage");
 const supportService = require("../services/supportService");
 const FixedDeposit = require("../models/FixedDeposit");
@@ -25,15 +26,14 @@ const Document = require("../models/Document");
 router.get("/upgrade", requireAuth, async (req, res, next) => {
   try {
     const account = await Account.findOne({ userId: req.session.user.id });
-    const pendingApplication = await KYCApplication.findOne({
+    const latestApplication = await KYCApplication.findOne({
       userId: req.session.user.id,
-      status: "pending",
     }).sort({ createdAt: -1 });
 
     res.render("customer/upgrade", {
       title: "Upgrade your account",
       account,
-      pendingApplication,
+      latestApplication,
     });
   } catch (err) {
     next(err);
@@ -590,6 +590,53 @@ router.post("/support", requireAuth, async (req, res, next) => {
         status: 400,
       });
     }
+    next(err);
+  }
+});
+router.get("/change-password", requireAuth, (req, res) => {
+  res.render("customer/change-password", {
+    title: "Change password",
+    error: null,
+    success: false,
+  });
+});
+
+router.post("/change-password", requireAuth, async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+    const user = await User.findById(req.session.user.id);
+
+    if (!(await bcrypt.compare(currentPassword, user.passwordHash))) {
+      return res.status(400).render("customer/change-password", {
+        title: "Change password",
+        error: "Your current password is incorrect.",
+        success: false,
+      });
+    }
+    if (newPassword.length < 8) {
+      return res.status(400).render("customer/change-password", {
+        title: "Change password",
+        error: "Your new password must be at least 8 characters.",
+        success: false,
+      });
+    }
+    if (newPassword !== confirmNewPassword) {
+      return res.status(400).render("customer/change-password", {
+        title: "Change password",
+        error: "New passwords do not match.",
+        success: false,
+      });
+    }
+
+    user.passwordHash = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.render("customer/change-password", {
+      title: "Change password",
+      error: null,
+      success: true,
+    });
+  } catch (err) {
     next(err);
   }
 });

@@ -4,19 +4,25 @@
     <h2 style="margin-top:0;">Upgrade your account</h2>
 
     <div class="card">
-      <% if (pendingApplication) { %>
-        <span class="badge badge-pending">Pending review — Tier <%= pendingApplication.tierRequested %></span>
-        <p style="color:var(--color-ink-muted); margin-top:10px;">
-          We're reviewing your application. You'll get an email once it's decided.
-        </p>
+      <% if (latestApplication && latestApplication.status === 'pending') { %>
+        <span class="badge badge-pending">Pending review — Tier <%= latestApplication.tierRequested %></span>
+        <p style="color:var(--color-ink-muted); margin-top:10px;">We're reviewing your application. You'll get an email once it's decided.</p>
+
+      <% } else if (latestApplication && latestApplication.status === 'more_info_required') { %>
+        <span class="badge badge-error">More information needed — Tier <%= latestApplication.tierRequested %></span>
+        <p style="margin-top:10px;"><%= latestApplication.reviewNote %></p>
+        <a href="/account/upgrade/tier<%= latestApplication.tierRequested %>" class="btn btn-primary" style="margin-top:8px;">Resubmit application</a>
+
       <% } else if (account.tier === 1) { %>
         <h3 style="margin-top:0;">Tier 1 → Tier 2</h3>
         <p style="color:var(--color-ink-muted);">Raises your transfer limits. Requires a government ID and proof of address.</p>
         <a href="/account/upgrade/tier2" class="btn btn-primary">Start Tier 2 verification</a>
+
       <% } else if (account.tier === 2) { %>
         <h3 style="margin-top:0;">Tier 2 → Tier 3</h3>
         <p style="color:var(--color-ink-muted);">Our highest tier. Requires a passport photo, proof of address, source of funds, and a card image.</p>
         <a href="/account/upgrade/tier3" class="btn btn-primary">Start Tier 3 verification</a>
+
       <% } else { %>
         <span class="badge badge-success">Tier 3 active</span>
         <p style="color:var(--color-ink-muted); margin-top:10px;">You're at the highest account tier.</p>

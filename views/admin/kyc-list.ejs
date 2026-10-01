@@ -2,19 +2,29 @@
   <%- include('../partials/adminSidebar', { activePage: 'kyc' }) %>
   <div class="app-main">
     <h2 style="margin-top:0;">KYC review</h2>
+
+    <div class="admin-search">
+      <a href="/admin/kyc" class="btn <%= statusFilter === '' ? 'btn-primary' : 'btn-secondary' %>" style="padding:8px 14px;">All</a>
+      <a href="/admin/kyc?status=pending" class="btn <%= statusFilter === 'pending' ? 'btn-primary' : 'btn-secondary' %>" style="padding:8px 14px;">Pending</a>
+      <a href="/admin/kyc?status=more_info_required" class="btn <%= statusFilter === 'more_info_required' ? 'btn-primary' : 'btn-secondary' %>" style="padding:8px 14px;">More info required</a>
+      <a href="/admin/kyc?status=approved" class="btn <%= statusFilter === 'approved' ? 'btn-primary' : 'btn-secondary' %>" style="padding:8px 14px;">Approved</a>
+      <a href="/admin/kyc?status=rejected" class="btn <%= statusFilter === 'rejected' ? 'btn-primary' : 'btn-secondary' %>" style="padding:8px 14px;">Rejected</a>
+    </div>
+
     <div class="card">
       <% if (applications.length === 0) { %>
-        <div class="empty-state">No pending applications.</div>
+        <div class="empty-state">No applications match this filter.</div>
       <% } else { %>
         <table class="admin-table">
-          <thead><tr><th>Customer</th><th>Tier requested</th><th>Submitted</th><th></th></tr></thead>
+          <thead><tr><th>Customer</th><th>Tier requested</th><th>Submitted</th><th>Status</th><th></th></tr></thead>
           <tbody>
             <% applications.forEach(function(app) { %>
               <tr>
                 <td><%= app.userId.firstName %> <%= app.userId.lastName %><br><span style="color:var(--color-ink-muted); font-size:0.8rem;"><%= app.userId.email %></span></td>
                 <td>Tier <%= app.tierRequested %></td>
                 <td><%= new Date(app.createdAt).toLocaleDateString() %></td>
-                <td><a href="/admin/kyc/<%= app._id %>" class="btn btn-secondary" style="padding:6px 12px;">Review</a></td>
+                <td><span class="badge badge-<%= app.status === 'approved' ? 'success' : (app.status === 'rejected' ? 'error' : 'pending') %>"><%= app.status.replace(/_/g, ' ') %></span></td>
+                <td><a href="/admin/kyc/<%= app._id %>" class="btn btn-secondary" style="padding:6px 12px;">View</a></td>
               </tr>
             <% }); %>
           </tbody>
