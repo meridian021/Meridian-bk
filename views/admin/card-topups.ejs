@@ -2,7 +2,7 @@
   <%- include('../partials/adminSidebar', { activePage: 'card-topups' }) %>
   <div class="app-main">
     <h2 style="margin-top:0;">Card top-ups</h2>
-    <div class="card">
+    <div class="admin-table-scroll">
       <% if (topUps.length === 0) { %>
         <div class="empty-state">No card top-up requests yet.</div>
       <% } else { %>

@@ -2,7 +2,7 @@
   <%- include('../partials/adminSidebar', { activePage: 'transfers' }) %>
   <div class="app-main">
     <h2 style="margin-top:0;">Transfers</h2>
-    <div class="card">
+    <div class="admin-table-scroll">
       <% if (transfers.length === 0) { %>
         <div class="empty-state">No transfer requests yet.</div>
       <% } else { %>

@@ -2,7 +2,7 @@
   <%- include('../partials/adminSidebar', { activePage: 'crypto' }) %>
   <div class="app-main">
     <h2 style="margin-top:0;">Crypto deposits</h2>
-    <div class="card">
+    <div class="admin-table-scroll">
       <% if (deposits.length === 0) { %>
         <div class="empty-state">No crypto deposit requests yet.</div>
       <% } else { %>

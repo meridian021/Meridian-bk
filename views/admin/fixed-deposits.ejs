@@ -2,7 +2,7 @@
   <%- include('../partials/adminSidebar', { activePage: 'fixed-deposits' }) %>
   <div class="app-main">
     <h2 style="margin-top:0;">Fixed deposits</h2>
-    <div class="card">
+    <div class="admin-table-scroll">
       <% if (deposits.length === 0) { %>
         <div class="empty-state">No fixed deposits yet.</div>
       <% } else { %>

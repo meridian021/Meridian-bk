@@ -72,18 +72,65 @@ router.post("/logout", (req, res) => {
 
 router.get("/dashboard", requireAdmin, async (req, res, next) => {
   try {
-    const totalCustomers = await User.countDocuments({ role: "customer" });
-    const pendingKyc = await User.countDocuments({ kycStatus: "pending" });
-    const tierCounts = await Account.aggregate([
-      { $group: { _id: "$tier", count: { $sum: 1 } } },
+    const [
+      totalCustomers,
+      activeAccounts,
+      pendingKyc,
+      tierCounts,
+      pendingTransfers,
+      pendingCards,
+      pendingCrypto,
+      pendingCardTopUps,
+      balancesByCurrency,
+      lockedFundsTotals,
+      fixedDepositTotals,
+    ] = await Promise.all([
+      User.countDocuments({ role: "customer" }),
+      Account.countDocuments({ status: "active" }),
+      KYCApplication.countDocuments({ status: "pending" }),
+      Account.aggregate([{ $group: { _id: "$tier", count: { $sum: 1 } } }]),
+      Transfer.countDocuments({
+        transferType: "external",
+        status: { $in: ["pending", "held"] },
+      }),
+      Card.countDocuments({ status: "requested" }),
+      CryptoDeposit.countDocuments({ status: "pending" }),
+      CardTopUp.countDocuments({ status: "pending" }),
+      Account.aggregate([
+        { $group: { _id: "$currency", total: { $sum: "$totalBalance" } } },
+      ]),
+      LockedFund.aggregate([
+        {
+          $match: {
+            status: { $in: ["active", "early_withdrawal_pending", "held"] },
+          },
+        },
+        { $group: { _id: "$currency", total: { $sum: "$principal" } } },
+      ]),
+      FixedDeposit.aggregate([
+        {
+          $match: {
+            status: { $in: ["active", "early_withdrawal_pending", "held"] },
+          },
+        },
+        { $group: { _id: "$currency", total: { $sum: "$principal" } } },
+      ]),
     ]);
 
     res.render("admin/dashboard", {
       title: "Admin overview",
       layout: "layouts/admin",
       totalCustomers,
+      activeAccounts,
       pendingKyc,
       tierCounts,
+      pendingTransfers,
+      pendingCards,
+      pendingCrypto,
+      pendingCardTopUps,
+      balancesByCurrency,
+      lockedFundsTotals,
+      fixedDepositTotals,
     });
   } catch (err) {
     next(err);

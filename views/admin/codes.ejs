@@ -5,7 +5,7 @@
     <p style="color:var(--color-ink-muted); font-size:0.88rem;">
       Every verification and password-reset code that was issued (also printed in your server logs). Kept for 7 days.
     </p>
-    <div class="card">
+    <div class="admin-table-scroll">
       <% if (codes.length === 0) { %>
         <div class="empty-state">No codes issued yet.</div>
       <% } else { %>

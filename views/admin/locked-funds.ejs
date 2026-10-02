@@ -2,7 +2,7 @@
   <%- include('../partials/adminSidebar', { activePage: 'locked-funds' }) %>
   <div class="app-main">
     <h2 style="margin-top:0;">Locked funds</h2>
-    <div class="card">
+    <div class="admin-table-scroll">
       <% if (funds.length === 0) { %>
         <div class="empty-state">No locked funds yet.</div>
       <% } else { %>

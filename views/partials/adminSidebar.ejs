@@ -1,58 +1,186 @@
-<div class="sidebar">
-  <a
-    href="/admin/dashboard"
-    class="sidebar-link <%= activePage === 'overview' ? 'active' : '' %>"
-    >Overview</a
-  >
-  <a
-    href="/admin/customers"
-    class="sidebar-link <%= activePage === 'customers' ? 'active' : '' %>"
-    >Customers</a
-  >
+<div class="admin-sidebar">
+  <!-- Desktop -->
+  <div class="admin-sidebar-desktop">
+    <p class="admin-sidebar-label">MANAGEMENT</p>
 
-  <a
-    href="/admin/kyc"
-    class="sidebar-link <%= activePage === 'kyc' ? 'active' : '' %>"
-    >KYC</a
-  >
-  <a
-    href="/admin/transfers"
-    class="sidebar-link <%= activePage === 'transfers' ? 'active' : '' %>"
-    >Transfers</a
-  >
-  <a
-    href="/admin/cards"
-    class="sidebar-link <%= activePage === 'cards' ? 'active' : '' %>"
-    >Cards</a
-  >
-  <a
-    href="/admin/crypto"
-    class="sidebar-link <%= activePage === 'crypto' ? 'active' : '' %>"
-    >Crypto</a
-  >
-  <a
-    href="/admin/card-topups"
-    class="sidebar-link <%= activePage === 'card-topups' ? 'active' : '' %>"
-    >Card Top-ups</a
-  >
-  <a
-    href="/admin/fixed-deposits"
-    class="sidebar-link <%= activePage === 'fixed-deposits' ? 'active' : '' %>"
-    >Fixed Deposits</a
-  >
-  <a
-    href="/admin/locked-funds"
-    class="sidebar-link <%= activePage === 'locked-funds' ? 'active' : '' %>"
-    >Locked Funds</a
-  >
-  <a
-    href="/admin/settings"
-    class="sidebar-link <%= activePage === 'settings' ? 'active' : '' %>"
-    >Settings</a
-  >
-  <a
-    href="/admin/codes"
-    class="sidebar-link <%= activePage === 'codes' ? 'active' : '' %>"
-    >Email Codes</a
-  >
+    <a
+      href="/admin/dashboard"
+      class="admin-sidebar-link <%= activePage === 'overview' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">⌂</span>
+      Overview
+    </a>
+
+    <a
+      href="/admin/customers"
+      class="admin-sidebar-link <%= activePage === 'customers' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">◎</span>
+      Customers
+    </a>
+
+    <a
+      href="/admin/kyc"
+      class="admin-sidebar-link <%= activePage === 'kyc' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">✓</span>
+      KYC
+    </a>
+
+    <a
+      href="/admin/transfers"
+      class="admin-sidebar-link <%= activePage === 'transfers' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">↗</span>
+      Transfers
+    </a>
+
+    <a
+      href="/admin/cards"
+      class="admin-sidebar-link <%= activePage === 'cards' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">▣</span>
+      Cards
+    </a>
+
+    <a
+      href="/admin/crypto"
+      class="admin-sidebar-link <%= activePage === 'crypto' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">₿</span>
+      Crypto
+    </a>
+
+    <a
+      href="/admin/card-topups"
+      class="admin-sidebar-link <%= activePage === 'card-topups' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">+</span>
+      Card Top-ups
+    </a>
+
+    <p class="admin-sidebar-label admin-sidebar-label-spaced">ACCOUNTS</p>
+
+    <a
+      href="/admin/fixed-deposits"
+      class="admin-sidebar-link <%= activePage === 'fixed-deposits' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">◫</span>
+      Fixed Deposits
+    </a>
+
+    <a
+      href="/admin/locked-funds"
+      class="admin-sidebar-link <%= activePage === 'locked-funds' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">▤</span>
+      Locked Funds
+    </a>
+
+    <p class="admin-sidebar-label admin-sidebar-label-spaced">SYSTEM</p>
+
+    <a
+      href="/admin/settings"
+      class="admin-sidebar-link <%= activePage === 'settings' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">⚙</span>
+      Settings
+    </a>
+
+    <a
+      href="/admin/codes"
+      class="admin-sidebar-link <%= activePage === 'codes' ? 'active' : '' %>"
+    >
+      <span class="admin-sidebar-icon">✉</span>
+      Email Codes
+    </a>
+  </div>
+
+  <!-- Mobile -->
+  <details class="admin-mobile-sidebar">
+    <summary class="admin-mobile-sidebar-toggle">
+      <span>
+        <small>ADMIN NAVIGATION</small>
+        <strong>Open section</strong>
+      </span>
+
+      <span class="admin-mobile-chevron">⌄</span>
+    </summary>
+
+    <div class="admin-mobile-sidebar-menu">
+      <a
+        href="/admin/dashboard"
+        class="<%= activePage === 'overview' ? 'active' : '' %>"
+      >
+        Overview
+      </a>
+
+      <a
+        href="/admin/customers"
+        class="<%= activePage === 'customers' ? 'active' : '' %>"
+      >
+        Customers
+      </a>
+
+      <a href="/admin/kyc" class="<%= activePage === 'kyc' ? 'active' : '' %>">
+        KYC
+      </a>
+
+      <a
+        href="/admin/transfers"
+        class="<%= activePage === 'transfers' ? 'active' : '' %>"
+      >
+        Transfers
+      </a>
+
+      <a
+        href="/admin/cards"
+        class="<%= activePage === 'cards' ? 'active' : '' %>"
+      >
+        Cards
+      </a>
+
+      <a
+        href="/admin/crypto"
+        class="<%= activePage === 'crypto' ? 'active' : '' %>"
+      >
+        Crypto
+      </a>
+
+      <a
+        href="/admin/card-topups"
+        class="<%= activePage === 'card-topups' ? 'active' : '' %>"
+      >
+        Card Top-ups
+      </a>
+
+      <a
+        href="/admin/fixed-deposits"
+        class="<%= activePage === 'fixed-deposits' ? 'active' : '' %>"
+      >
+        Fixed Deposits
+      </a>
+
+      <a
+        href="/admin/locked-funds"
+        class="<%= activePage === 'locked-funds' ? 'active' : '' %>"
+      >
+        Locked Funds
+      </a>
+
+      <a
+        href="/admin/settings"
+        class="<%= activePage === 'settings' ? 'active' : '' %>"
+      >
+        Settings
+      </a>
+
+      <a
+        href="/admin/codes"
+        class="<%= activePage === 'codes' ? 'active' : '' %>"
+      >
+        Email Codes
+      </a>
+    </div>
+  </details>
 </div>

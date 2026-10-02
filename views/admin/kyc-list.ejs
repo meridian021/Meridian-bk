@@ -10,8 +10,7 @@
       <a href="/admin/kyc?status=approved" class="btn <%= statusFilter === 'approved' ? 'btn-primary' : 'btn-secondary' %>" style="padding:8px 14px;">Approved</a>
       <a href="/admin/kyc?status=rejected" class="btn <%= statusFilter === 'rejected' ? 'btn-primary' : 'btn-secondary' %>" style="padding:8px 14px;">Rejected</a>
     </div>
-
-    <div class="card">
+    <div class="admin-table-scroll">
       <% if (applications.length === 0) { %>
         <div class="empty-state">No applications match this filter.</div>
       <% } else { %>

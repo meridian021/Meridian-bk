@@ -2,7 +2,7 @@
   <%- include('../partials/adminSidebar', { activePage: 'cards' }) %>
   <div class="app-main">
     <h2 style="margin-top:0;">Card requests</h2>
-    <div class="card">
+    <div class="admin-table-scroll">
       <% if (cards.length === 0) { %>
         <div class="empty-state">No card requests yet.</div>
       <% } else { %>

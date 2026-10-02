@@ -1,25 +1,145 @@
-<section class="container" style="padding: 32px 24px;">
-  <h2>Overview</h2>
-  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 20px;">
-    <div class="card">
-      <div style="color:var(--color-ink-muted); font-size:0.85rem;">Total customers</div>
-      <div style="font-size:1.8rem; font-family:var(--font-display);"><%= totalCustomers %></div>
+<section class="admin-page">
+  <div class="admin-page-header">
+    <div>
+      <p class="admin-eyebrow">MERIDIAN BANK · ADMIN</p>
+      <h1>Overview</h1>
+      <p class="admin-page-subtitle">
+        Monitor customers, accounts and activity across the platform.
+      </p>
     </div>
-    <div class="card">
-      <div style="color:var(--color-ink-muted); font-size:0.85rem;">Pending KYC</div>
-      <div style="font-size:1.8rem; font-family:var(--font-display);"><%= pendingKyc %></div>
+
+    <div class="admin-status">
+      <span></span>
+      System overview
     </div>
-    <% tierCounts.forEach(function(t) { %>
-      <div class="card">
-        <div style="color:var(--color-ink-muted); font-size:0.85rem;">Tier <%= t._id %> accounts</div>
-        <div style="font-size:1.8rem; font-family:var(--font-display);"><%= t.count %></div>
-      </div>
-    <% }); %>
   </div>
 
-  <div class="card" style="margin-top: 24px;">
-    <p style="color: var(--color-ink-muted);">
-      Customer management, KYC review, transfers, cards, and settings screens land in Phases 4–5.
-    </p>
-  </div>
+  <!-- Customer metrics -->
+  <section class="admin-section">
+    <div class="admin-section-heading">
+      <div>
+        <h2>Customers</h2>
+        <p>Account activity and customer distribution.</p>
+      </div>
+    </div>
+
+    <div class="admin-stat-grid">
+
+      <div class="admin-stat-card admin-stat-featured">
+        <div class="admin-stat-top">
+          <span>Total customers</span>
+          <span class="admin-stat-icon">◎</span>
+        </div>
+        <strong><%= totalCustomers %></strong>
+        <small>Registered customers</small>
+      </div>
+
+      <div class="admin-stat-card">
+        <div class="admin-stat-top">
+          <span>Active accounts</span>
+          <span class="admin-stat-icon">✓</span>
+        </div>
+        <strong><%= activeAccounts %></strong>
+        <small>Currently active</small>
+      </div>
+
+      <div class="admin-stat-card">
+        <div class="admin-stat-top">
+          <span>Pending KYC</span>
+          <span class="admin-stat-icon admin-stat-icon-warning">!</span>
+        </div>
+        <strong><%= pendingKyc %></strong>
+        <small>Awaiting review</small>
+      </div>
+
+    </div>
+
+    <div class="admin-tier-grid">
+      <% [1, 2, 3].forEach(function(t) { %>
+        <% const match = tierCounts.find(function(tc) { return tc._id === t; }); %>
+
+        <div class="admin-tier-card">
+          <span>Tier <%= t %></span>
+          <strong><%= match ? match.count : 0 %></strong>
+          <small>accounts</small>
+        </div>
+      <% }); %>
+    </div>
+  </section>
+
+
+  <!-- Awaiting review -->
+  <section class="admin-section admin-review-section">
+
+    <div class="admin-section-heading">
+      <div>
+        <h2>Awaiting your review</h2>
+        <p>Items that may require administrative attention.</p>
+      </div>
+    </div>
+
+    <div class="admin-review-grid">
+
+      <a href="/admin/transfers" class="admin-review-card">
+        <div class="admin-review-icon">↗</div>
+
+        <div class="admin-review-content">
+          <strong>Pending transfers</strong>
+          <span>Transfers awaiting review</span>
+        </div>
+
+        <div class="admin-review-number">
+          <%= pendingTransfers %>
+          <span>→</span>
+        </div>
+      </a>
+
+
+      <a href="/admin/cards" class="admin-review-card">
+        <div class="admin-review-icon">▣</div>
+
+        <div class="admin-review-content">
+          <strong>Pending card requests</strong>
+          <span>Cards awaiting processing</span>
+        </div>
+
+        <div class="admin-review-number">
+          <%= pendingCards %>
+          <span>→</span>
+        </div>
+      </a>
+
+
+      <a href="/admin/crypto" class="admin-review-card">
+        <div class="admin-review-icon">₿</div>
+
+        <div class="admin-review-content">
+          <strong>Pending crypto deposits</strong>
+          <span>Deposits awaiting review</span>
+        </div>
+
+        <div class="admin-review-number">
+          <%= pendingCrypto %>
+          <span>→</span>
+        </div>
+      </a>
+
+
+      <a href="/admin/card-topups" class="admin-review-card">
+        <div class="admin-review-icon">+</div>
+
+        <div class="admin-review-content">
+          <strong>Pending card top-ups</strong>
+          <span>Top-ups awaiting processing</span>
+        </div>
+
+        <div class="admin-review-number">
+          <%= pendingCardTopUps %>
+          <span>→</span>
+        </div>
+      </a>
+
+    </div>
+
+  </section>
 </section>

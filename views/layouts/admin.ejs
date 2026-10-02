@@ -1,27 +1,64 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title><%= title %> · <%= bankName %> Admin</title>
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-  <nav class="nav">
-    <div class="nav-inner">
-      <span class="brand"><%= bankName %> <span style="color:var(--color-ink-muted); font-family:var(--font-body); font-size:0.75rem;">ADMIN</span></span>
-      <div class="nav-links">
-        <a href="/admin/dashboard">Overview</a>
-        <a href="/admin/customers">Customers</a>
-        <form method="POST" action="/admin/logout" style="display:inline;">
-          <button class="btn btn-secondary" type="submit" style="padding:6px 14px;">Log out</button>
-        </form>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><%= title %> · <%= bankName %> Admin</title>
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <nav class="nav">
+      <div class="nav-inner">
+        <span class="brand">
+          <%= bankName %>
+          <span
+            style="
+              color: var(--color-ink-muted);
+              font-family: var(--font-body);
+              font-size: 0.75rem;
+            "
+          >
+            ADMIN
+          </span>
+        </span>
+
+        <!-- Desktop navigation -->
+        <div class="nav-links">
+          <a href="/admin/dashboard">Overview</a>
+          <a href="/admin/customers">Customers</a>
+
+          <form method="POST" action="/admin/logout" style="display: inline">
+            <button
+              class="btn btn-secondary"
+              type="submit"
+              style="padding: 6px 14px"
+            >
+              Log out
+            </button>
+          </form>
+        </div>
+
+        <!-- Mobile navigation -->
+        <details class="mobile-nav admin-mobile-nav">
+          <summary class="mobile-nav-toggle">
+            <span>Menu</span>
+            <span class="mobile-nav-icon">☰</span>
+          </summary>
+
+          <div class="mobile-nav-dropdown">
+            <a href="/admin/dashboard">Overview</a>
+            <a href="/admin/customers">Customers</a>
+
+            <form method="POST" action="/admin/logout">
+              <button type="submit">Log out</button>
+            </form>
+          </div>
+        </details>
       </div>
-    </div>
-  </nav>
-  <main>
-    <%- body %>
-  </main>
-  <script src="/js/loading.js"></script>
-</body>
+    </nav>
+
+    <main><%- body %></main>
+
+    <script src="/js/loading.js"></script>
+  </body>
 </html>
